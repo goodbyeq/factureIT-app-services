@@ -74,8 +74,8 @@ public class ApplicationConfiguration {
     // Properities Configuration
     // ******************************************************************//
 
-	@Value("${keychain.file:billlive_key.xml}")
-	private String keyChainFile = "billlive_key.xml";
+	@Value("${keychain.file:factureIT_key.xml}")
+	private String keyChainFile = "factureIT_key.xml";
 	
 	@Resource(name = "keyChain")
 	private KeyChain keyChain;

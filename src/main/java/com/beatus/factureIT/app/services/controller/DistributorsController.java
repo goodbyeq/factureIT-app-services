@@ -1,70 +1,80 @@
 package com.beatus.factureIT.app.services.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import java.sql.SQLException;
+import java.util.List;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.beatus.factureIT.app.services.model.Distributor;
+import com.beatus.factureIT.app.services.model.DistributorResponse;
+import com.beatus.factureIT.app.services.model.JSendResponse;
+import com.beatus.factureIT.app.services.model.UserCreatedResponse;
+import com.beatus.factureIT.app.services.service.DistributorService;
 import com.beatus.factureIT.app.services.utils.Constants;
 
 @Controller
 @RequestMapping(Constants.WEB_DISTRIBUTOR_REQUEST)
 public class DistributorsController {
 
-	/*private static final Logger LOGGER = LoggerFactory.getLogger(DistributorsController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DistributorsController.class);
 
 	@Resource(name = "distributorService")
-    private DistributorService distributorService;
+	private DistributorService distributorService;
+
+	public static JSendResponse<DistributorResponse> jsend(DistributorResponse distributorResponse) {
+		if (distributorResponse == null || distributorResponse.getDistributors() == null
+				|| distributorResponse.getDistributors().get(0) == null) {
+			return new JSendResponse<DistributorResponse>(Constants.FAILURE, distributorResponse);
+		} else {
+			return new JSendResponse<DistributorResponse>(Constants.SUCCESS, distributorResponse);
+		}
+	}
 	
-    @RequestMapping(method = RequestMethod.GET)
-    public String distributorHome(HttpServletRequest request, ModelMap model) {
-        return "distributor/home";
-    }
-    
-    @RequestMapping(value = Constants.WEB_DISTRIBUTOR_ADD_DISTRIBUTOR,
-            method = RequestMethod.GET)
-    public String addDistributorGet(HttpServletRequest request, ModelMap model) throws ClassNotFoundException, SQLException {
-    	String companyId = (String) request.getAttribute(Constants.COMPANY_ID);
-    	List<Location> locations = distributorService.getLocations(companyId);
-        model.addAttribute("locations", locations);
-        return "distributor/request-add";
-    }
-    
-    @RequestMapping(value = Constants.WEB_DISTRIBUTOR_ADD_DISTRIBUTOR,
-            method = RequestMethod.POST)
-    public String addDistributorPost(HttpServletRequest request, Distributor distributor, ModelMap model) throws ClassNotFoundException, SQLException {
-    	String companyId = (String) request.getAttribute(Constants.COMPANY_ID);
-		String uid = (String) request.getAttribute(Constants.USERNAME);
-    	String resp = distributorService.addDistributor(distributor, companyId, uid);
-    	return resp;
-    }
-    
-    @RequestMapping(value = Constants.WEB_DISTRIBUTOR_EDIT_DISTRIBUTOR,
-            method = RequestMethod.POST)
-    public String editDistributorPost(HttpServletRequest request, Distributor distributor, ModelMap model) throws ClassNotFoundException, SQLException {
-    	String companyId = (String) request.getAttribute(Constants.COMPANY_ID);
-		String uid = (String) request.getAttribute(Constants.USERNAME);
-    	String resp = distributorService.editDistributor(distributor, companyId, uid);
-    	return resp;
-    }
-    
-    @RequestMapping(value = Constants.WEB_DISTRIBUTOR_DELETE_DISTRIBUTOR,
-            method = RequestMethod.POST)
-    public String deleteDistributorPost(HttpServletRequest request, Distributor distributor, ModelMap model) throws ClassNotFoundException, SQLException {
-    	String companyId = (String) request.getAttribute(Constants.COMPANY_ID);
-		String uid = (String) request.getAttribute(Constants.USERNAME);
-    	String resp = distributorService.deleteDistributor(distributor.getDistributorId(), companyId, uid);
-    	return resp;
-    }
-    
-    
-    @RequestMapping(value = Constants.WEB_DISTRIBUTOR_GET_DISTRIBUTORS,
-            method = RequestMethod.GET)
-    public String getDistributorsGet(HttpServletRequest request, ModelMap model) throws ClassNotFoundException, SQLException {
-    	String companyId = (String) request.getAttribute(Constants.COMPANY_ID);
-    	List<Distributor> distributors = distributorService.getDistributors(companyId);
-    	LOGGER.info("After the get call and the distributors are "  + distributors != null? distributors.size() > 0 ? distributors.get(0).getDistributorName() : "No Distributor data" : "No Distributor data");
-        DistributorResponse resp = new DistributorResponse();
-        resp.setDistributors(distributors);
-    	model.addAttribute("distributors", distributors);
-        return "distributor/request-get";
-    }*/
+	public static JSendResponse<Distributor> jsend(Distributor distributor) {
+		if (distributor == null || distributor == null) {
+			return new JSendResponse<Distributor>(Constants.FAILURE, distributor);
+		} else {
+			return new JSendResponse<Distributor>(Constants.SUCCESS, distributor);
+		}
+	}
+
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_GET_DISTRIBUTOR_BY_ID, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<Distributor> getDistributorByIdGet(HttpServletRequest request,
+			ModelMap model, @RequestParam String distributorId) throws ClassNotFoundException, SQLException {
+		Distributor distributor = distributorService.getDistributorByDistributorId(distributorId);
+		LOGGER.info("After the get call and the distributor is " + distributor != null
+				? distributor.getFirstname() : "No Distributor data");
+		return jsend(distributor);
+	}
+
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_GET_DISTRIBUTOR_BY_UID, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<Distributor> getDistributorByUIDGet(HttpServletRequest request,
+			ModelMap model, @RequestParam String uid) throws ClassNotFoundException, SQLException {
+		Distributor distributor = distributorService.getDistributorByUID(uid);
+		LOGGER.info("After the get call and the distributor is " + distributor != null
+				? distributor.getFirstname() : "No Distributor data");
+		return jsend(distributor);
+	}
+
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_GET_ALL_DISTRIBUTORS, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<DistributorResponse> getAllDistributorsGet(HttpServletRequest request,
+			ModelMap model) throws ClassNotFoundException, SQLException {
+		List<Distributor> distributors = distributorService.getAllDistributors();
+		LOGGER.info("After the get call and the distributors are " + distributors != null
+				? distributors.size() > 0 ? distributors.get(0).getFirstname() : "No Distributor data"
+				: "No Distributor data");
+		DistributorResponse resp = new DistributorResponse();
+		resp.setDistributors(distributors);
+		return jsend(resp);
+	}
 }

@@ -82,5 +82,21 @@ public class Constants {
 	public static final String RETAILER_TYPE = "RETAILER";
 	public static final String MANUFACTURER_TYPE = "MANUFACTURER";
 	public static final String CUSTOMER_TYPE = "CUSTOMER";
-	public static final String COLLECTION_AGENT_TYPE = "COLLECTION_AGENT";	
+	public static final String COLLECTION_AGENT_TYPE = "COLLECTION_AGENT";
+	public static final String WEB_DISTRIBUTOR_GET_ALL_DISTRIBUTORS = "/getAllDistributors";
+	public static final String WEB_DISTRIBUTOR_GET_DISTRIBUTOR_BY_UID = "/getDistributorByUID";
+	public static final String WEB_DISTRIBUTOR_GET_DISTRIBUTOR_BY_ID = "/getDistributorById";	
+	public static final String WEB_CUSTOMER_GET_ALL_CUSTOMERS = "/getAllCustomers";
+	public static final String WEB_CUSTOMER_GET_CUSTOMER_BY_UID = "/getCustomerByUID";
+	public static final String WEB_CUSTOMER_GET_CUSTOMER_BY_ID = "/getCustomerById";	
+	public static final String WEB_MANUFACTURER_GET_ALL_MANUFACTURERS = "/getAllManufacturers";
+	public static final String WEB_MANUFACTURER_GET_MANUFACTURER_BY_UID = "/getManufacturerByUID";
+	public static final String WEB_MANUFACTURER_GET_MANUFACTURER_BY_ID = "/getManufacturerById";	
+	public static final String WEB_RETAILER_GET_ALL_RETAILERS = "/getAllRetailers";
+	public static final String WEB_RETAILER_GET_RETAILER_BY_UID = "/getRetailerByUID";
+	public static final String WEB_RETAILER_GET_RETAILER_BY_ID = "/getRetailerById";
+	
+    public static final String WEB_MANUFACTURER_REQUEST = "/manufacturer";
+    public static final String WEB_RETAILER_REQUEST = "/retailer";
+    public static final String WEB_CUSTOMER_REQUEST = "/customer";
 }

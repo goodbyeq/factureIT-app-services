@@ -95,7 +95,7 @@ public class LoginService {
 			user.setUsername(user.getPhone());
 			user.setIsVerified("No");
 			if (StringUtils.isNotBlank(user.getPhone())) {
-				User userfromDb = loginRepository.getUserByPhone(user.getPhone());
+				User userfromDb = loginRepository.getUserByUsername(user.getUsername());
 				LOGGER.info("userfromDb : " + userfromDb.toString());
 
 				if (userfromDb.getUsername() != null) {

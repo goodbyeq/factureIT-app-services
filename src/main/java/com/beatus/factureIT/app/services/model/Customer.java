@@ -1,6 +1,5 @@
 package com.beatus.factureIT.app.services.model;
 
-
-public class Distributor extends User{
+public class Customer extends User {
 
 }

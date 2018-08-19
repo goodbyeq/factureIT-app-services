@@ -1,13 +1,9 @@
 package com.beatus.factureIT.app.services.repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
-import org.springframework.transaction.annotation.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +12,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.beatus.factureIT.app.services.model.User;
+import com.beatus.factureIT.app.services.model.mapper.UserMapper;
 import com.beatus.factureIT.app.services.utils.Constants;
 
 @Component("loginRepository")
@@ -50,7 +48,7 @@ public class LoginRepository {
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public String addUser(User user) throws ClassNotFoundException, SQLException {
-		//if (user.getUserType() != null && user.getUserType().size() > 0) {
+		if (user.getUserType() != null && user.getUserType().size() > 0) {
 			try {
 				LOGGER.info("In adduser");
 				String sql = "INSERT INTO users (username, password, uid, isVerified) VALUES (?, ?, ?, ?)";
@@ -80,73 +78,15 @@ public class LoginRepository {
 			} finally {
 				
 			}
-		//}
-		//return Constants.ERROR_USER_CREATION;
+		}
+		return Constants.ERROR_USER_CREATION;
 	}
 
 	public User getUserByUsername(String username) throws ClassNotFoundException, SQLException {
-		PreparedStatement statement = null;
-		Connection conn = null;
-		try {
-			String sql = "SELECT * FROM users WHERE username = ?";
-			conn = dataSource.getConnection();
-			statement = conn.prepareStatement(sql);
-			statement.setString(1, username);
-			User user = new User();
-
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				user.setUsername(result.getString("username"));
-				user.setPassword(result.getString("password"));
-				user.setFirstname(result.getString("firstname"));
-				user.setLastname(result.getString("lastname"));
-				user.setEmail(result.getString("email"));
-				user.setPhone(result.getString("phone"));
-				user.setCompanyId(result.getString("company_id"));
-				user.setCompanyName(result.getString("company_name"));
-				user.setUid(result.getString("uid"));
-			}
-			return user;
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-			if (conn != null) {
-				conn.close();
-			}
-		}
-	}
-	
-	public User getUserByPhone(String phone) throws SQLException {
-		PreparedStatement statement = null;
-		Connection conn = null;
-		try {
-			String sql = "SELECT * FROM users WHERE phone = ?";
-			conn = dataSource.getConnection();
-			statement = conn.prepareStatement(sql);
-			statement.setString(1, phone);
-			User user = new User();
-
-			ResultSet result = statement.executeQuery();
-			while (result.next()) {
-				user.setUsername(result.getString("username"));
-				user.setPassword(result.getString("password"));
-				user.setFirstname(result.getString("firstname"));
-				user.setLastname(result.getString("lastname"));
-				user.setEmail(result.getString("email"));
-				user.setPhone(result.getString("phone"));
-				user.setCompanyId(result.getString("company_id"));
-				user.setCompanyName(result.getString("company_name"));
-				user.setUid(result.getString("uid"));
-			}
-			return user;
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-			if (conn != null) {
-				conn.close();
-			}
-		}
+		LOGGER.info("In getUserByUsername " + username);
+		String sql = "SELECT * FROM users WHERE username = ?";
+		User user = jdbcTemplate.queryForObject(sql, new Object[] { username }, new UserMapper());
+		LOGGER.info("The user returned " + user.getUsername());
+		return user;
 	}
 }
