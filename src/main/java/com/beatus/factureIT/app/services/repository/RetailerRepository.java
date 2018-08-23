@@ -11,13 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.beatus.factureIT.app.services.model.Distributor;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.User;
+import com.beatus.factureIT.app.services.model.mapper.DistributorMapper;
 import com.beatus.factureIT.app.services.model.mapper.RetailerMapper;
 import com.beatus.factureIT.app.services.utils.Utils;
 
@@ -119,6 +122,50 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 					+ " FROM retailer dist";
 			List<Retailer> retailers = jdbcTemplate.query(sql, new RetailerMapper());
 			return retailers;
+		} finally {
+		}
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public boolean addRetailerRelatedDistributors(List<String> distributorIds, String retailerId) {
+		try {
+			LOGGER.info("In addRetailerRelatedDistributors");
+			String sql = "INSERT INTO distributor_retailers (distributor_retailer_id, distributor_id, retailer_id) VALUES (?, ?, ?)";
+			int[] rowsInserted = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+				@Override
+				public void setValues(PreparedStatement ps, int i) throws SQLException {
+					ps.setString(1, Utils.generateRandomKey(50));
+					ps.setString(2, distributorIds.get(i));
+					ps.setString(3, retailerId);
+				}
+
+				@Override
+				public int getBatchSize() {
+					return distributorIds.size();
+				}
+			});
+			if (rowsInserted.length > 0) {
+				LOGGER.info("A new distributor_retailer_id was inserted successfully!");
+				return true;
+			} else {
+				return false;
+			}
+		} finally {
+		}
+	}
+	
+	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
+	public List<Distributor> getRetailerRelatedDistributors(String retailerId) throws ClassNotFoundException, SQLException {
+		try {
+			LOGGER.info("In getRetailerRelatedDistributors");
+			String sql = "SELECT dist.distributor_id AS distributorId, dist.distributor_company_name AS distributorCompanyName, "
+					+ " dist.distributor_company_type AS distributorCompanyType, dist.distributor_company_id AS distributorCompanyId, dist.uid AS uid, "
+					+ " dist.distributor_first_name AS distributorFirstName, dist.distributor_last_name AS distributorLastName, "
+					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
+					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
+					+ " FROM distributor dist, distributor_retailers dr WHERE dr.retailer_id = ? AND dr.distributor_id = dist.distributor_id";
+			List<Distributor> distributors = jdbcTemplate.query(sql, new Object[] {retailerId}, new DistributorMapper());
+			return distributors;
 		} finally {
 		}
 	}
