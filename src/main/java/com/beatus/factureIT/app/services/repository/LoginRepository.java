@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import main.java.com.beatus.factureIT.app.services.model.CollectionAgent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.app.services.model.mapper.UserMapper;
+import com.beatus.factureIT.app.services.repository.LoginRepository;
+import com.beatus.factureIT.app.services.repository.ManufacturerRepository;
 import com.beatus.factureIT.app.services.utils.Constants;
+import com.beatus.factureIT.app.services.utils.Utils;
 
 @Component("loginRepository")
 public class LoginRepository {
@@ -41,6 +46,9 @@ public class LoginRepository {
 	@Resource(name = "manufacturerRepository")
 	ManufacturerRepository manufacturerRepository;
 	
+	@Resource(name = "collectionAgentRepository")
+	CollectionAgentRepository collectionAgentRepository;
+	
 	@Autowired
 	public LoginRepository(DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
@@ -51,9 +59,9 @@ public class LoginRepository {
 		if (user.getUserType() != null && user.getUserType().size() > 0) {
 			try {
 				LOGGER.info("In adduser");
-				String sql = "INSERT INTO users (username, password, uid, isVerified) VALUES (?, ?, ?, ?)";
+				String sql = "INSERT INTO users (username, password, uid, user_type, isVerified) VALUES (?, ?, ?, ?, ?)";
 				int rowsInserted = jdbcTemplate.update(sql, user.getUsername(), user.getPassword(), user.getUid(),
-						user.getIsVerified());
+						user.getUserType().toString(), user.getIsVerified());
 
 				if (rowsInserted > 0) {
 					LOGGER.info("A new user was inserted successfully!");
@@ -80,6 +88,19 @@ public class LoginRepository {
 			}
 		}
 		return Constants.ERROR_USER_CREATION;
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public String addCollectionAgent(CollectionAgent agent,String uid) throws ClassNotFoundException, SQLException{
+		try {
+			LOGGER.info("In addCollectionAgent");
+			agent.setUid(Utils.generateRandomKey(50));
+			String response = addUser(agent);
+			String response = collectionAgentRepository.addCollectionAgent(agent, uid);
+			LOGGER.info("In addCollectionAgent response :" + response);
+			return response;
+		} finally {
+		}
 	}
 
 	public User getUserByUsername(String username) throws ClassNotFoundException, SQLException {

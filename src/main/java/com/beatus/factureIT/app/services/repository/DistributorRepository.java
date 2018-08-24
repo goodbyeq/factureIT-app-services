@@ -204,7 +204,7 @@ public class DistributorRepository {
 	}
 
 	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
-	public List<Manufacturer> getDistributorRelatedRetailers(String distributorId) throws ClassNotFoundException, SQLException {
+	public List<Retailer> getDistributorRelatedRetailers(String distributorId) throws ClassNotFoundException, SQLException {
 		try {
 			LOGGER.info("In getDistributorRelatedRetailers");
 			String sql = "SELECT dist.retailer_id AS retailerId, dist.retailer_company_name AS retailerCompanyName, "
@@ -214,7 +214,7 @@ public class DistributorRepository {
 					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode "
 					+ " FROM retailer dist, distributor_retailers dr WHERE dr.distributor_id = ? AND dr.retailer_id = dist.retailer_id ";
 			List<Retailer> retailers = jdbcTemplate.query(sql, new Object[] {distributorId}, new RetailerMapper());
-			return manufacturers;
+			return retailers;
 		} finally {
 		}
 	}

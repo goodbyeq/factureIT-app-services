@@ -4,7 +4,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
+
+import main.java.com.beatus.factureIT.app.services.model.CollectionAgent;
+import main.java.com.beatus.factureIT.app.services.repository.CollectionAgentRepository;
+import main.java.com.beatus.factureIT.app.services.service.LoginRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,6 +273,33 @@ public class ManufacturerRepository {
 					+ " FROM distributor dist, manufacturer_distributors md WHERE md.manufacturer_id = ? AND md.distributor_id = dist.distributor_id";
 			List<Distributor> distributors = jdbcTemplate.query(sql, new Object[] {manufacturerId}, new DistributorMapper());
 			return distributors;
+		} finally {
+		}
+	}
+	
+	public String addRoute(CollectionAgent agent, String manufacturerId, List<String> distributorIds, List<String> amountToBeCollected){
+		try {
+			LOGGER.info("In addProductCategoriesForManufacturer");
+			String sql = "INSERT INTO manufacturer_distributors (manufacturer_distributor_id, manufacturer_id, distributor_id) VALUES (?, ?, ?)";
+			int[] rowsInserted = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+				@Override
+				public void setValues(PreparedStatement ps, int i) throws SQLException {
+					ps.setString(1, Utils.generateRandomKey(50));
+					ps.setString(2, manufacturerId);
+					ps.setString(3, distributorIds.get(i));
+				}
+
+				@Override
+				public int getBatchSize() {
+					return distributorIds.size();
+				}
+			});
+			if (rowsInserted.length > 0) {
+				LOGGER.info("A new manufacturer was inserted successfully!");
+				return true;
+			} else {
+				return false;
+			}
 		} finally {
 		}
 	}
