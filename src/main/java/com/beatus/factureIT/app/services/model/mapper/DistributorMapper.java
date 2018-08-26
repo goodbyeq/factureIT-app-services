@@ -24,10 +24,10 @@ public class DistributorMapper implements RowMapper<Distributor> {
 		distributor.setLastname(result.getString("distributorLastName"));
 		distributor.setPhone(result.getString("distributorPhone"));
 		distributor.setEmail(result.getString("distributorEmail"));
-		distributor.setAddress(result.getString("distributorPhone"));
-		distributor.setCity(result.getString("distributorAddress"));
-		distributor.setState(result.getString("distributorCity"));
-		distributor.setZipcode(result.getString("distributorState"));
+		distributor.setAddress(result.getString("distributorAddress"));
+		distributor.setCity(result.getString("distributorCity"));
+		distributor.setState(result.getString("distributorState"));
+		distributor.setZipcode(result.getString("distributorZipcode"));
 		List<String> userType = new ArrayList<String>();
 		userType.add(Constants.DISTRIBUTOR_TYPE);
 		distributor.setUserType(userType);

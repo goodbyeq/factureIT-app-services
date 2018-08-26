@@ -24,10 +24,10 @@ public class RetailerMapper implements RowMapper<Retailer> {
 		retailer.setLastname(result.getString("retailerLastName"));
 		retailer.setPhone(result.getString("retailerPhone"));
 		retailer.setEmail(result.getString("retailerEmail"));
-		retailer.setAddress(result.getString("retailerPhone"));
-		retailer.setCity(result.getString("retailerAddress"));
-		retailer.setState(result.getString("retailerCity"));
-		retailer.setZipcode(result.getString("retailerState"));
+		retailer.setAddress(result.getString("retailerAddress"));
+		retailer.setCity(result.getString("retailerCity"));
+		retailer.setState(result.getString("retailerState"));
+		retailer.setZipcode(result.getString("retailerZipcode"));
 		List<String> userType = new ArrayList<String>();
 		userType.add(Constants.RETAILER_TYPE);
 		retailer.setUserType(userType);

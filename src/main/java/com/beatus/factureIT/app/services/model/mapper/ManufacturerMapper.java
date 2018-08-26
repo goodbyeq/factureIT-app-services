@@ -25,10 +25,10 @@ public class ManufacturerMapper implements RowMapper<Manufacturer> {
 		manufacturer.setLastname(result.getString("manufacturerLastName"));
 		manufacturer.setPhone(result.getString("manufacturerPhone"));
 		manufacturer.setEmail(result.getString("manufacturerEmail"));
-		manufacturer.setAddress(result.getString("manufacturerPhone"));
-		manufacturer.setCity(result.getString("manufacturerAddress"));
-		manufacturer.setState(result.getString("manufacturerCity"));
-		manufacturer.setZipcode(result.getString("manufacturerState"));
+		manufacturer.setAddress(result.getString("manufacturerAddress"));
+		manufacturer.setCity(result.getString("manufacturerCity"));
+		manufacturer.setState(result.getString("manufacturerState"));
+		manufacturer.setZipcode(result.getString("manufacturerZipcode"));
 		List<String> userType = new ArrayList<String>();
 		userType.add(Constants.MANUFACTURER_TYPE);
 		manufacturer.setUserType(userType);

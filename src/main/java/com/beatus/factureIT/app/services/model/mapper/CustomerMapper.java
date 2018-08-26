@@ -24,10 +24,10 @@ public class CustomerMapper implements RowMapper<Customer> {
 		customer.setLastname(result.getString("customerLastName"));
 		customer.setPhone(result.getString("customerPhone"));
 		customer.setEmail(result.getString("customerEmail"));
-		customer.setAddress(result.getString("customerPhone"));
-		customer.setCity(result.getString("customerAddress"));
-		customer.setState(result.getString("customerCity"));
-		customer.setZipcode(result.getString("customerState"));
+		customer.setAddress(result.getString("customerAddress"));
+		customer.setCity(result.getString("customerCity"));
+		customer.setState(result.getString("customerState"));
+		customer.setZipcode(result.getString("customerZipcode"));
 		List<String> userType = new ArrayList<String>();
 		userType.add(Constants.CUSTOMER_TYPE);
 		customer.setUserType(userType);

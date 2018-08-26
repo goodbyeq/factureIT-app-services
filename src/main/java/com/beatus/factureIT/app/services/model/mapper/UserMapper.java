@@ -17,7 +17,7 @@ public class UserMapper implements RowMapper<User> {
 		User user = new User();
 		user.setUsername(result.getString("username"));
 		user.setPassword(result.getString("password"));
-		user.setIsVerified(result.getString("isVerified"));
+		user.setIsVerified(result.getString("verified"));
 		user.setUid(result.getString("uid"));
 		String userType = result.getString("user_type");
 		List<String> userTypes = new ArrayList<String>();
