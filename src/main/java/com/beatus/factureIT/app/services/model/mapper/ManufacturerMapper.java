@@ -14,6 +14,7 @@ public class ManufacturerMapper implements RowMapper<Manufacturer> {
 
 	@Override
 	public Manufacturer mapRow(ResultSet result, int rowNum) throws SQLException {
+		
 		Manufacturer manufacturer = new Manufacturer();
 		manufacturer.setId(result.getString("manufacturerId"));
 		manufacturer.setCompanyName(result.getString("manufacturerCompanyName"));
@@ -29,7 +30,7 @@ public class ManufacturerMapper implements RowMapper<Manufacturer> {
 		manufacturer.setState(result.getString("manufacturerCity"));
 		manufacturer.setZipcode(result.getString("manufacturerState"));
 		List<String> userType = new ArrayList<String>();
-		userType.set(0, Constants.DISTRIBUTOR_TYPE);
+		userType.add(Constants.MANUFACTURER_TYPE);
 		manufacturer.setUserType(userType);
 		return manufacturer;
 	}

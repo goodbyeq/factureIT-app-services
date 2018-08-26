@@ -29,7 +29,7 @@ public class DistributorMapper implements RowMapper<Distributor> {
 		distributor.setState(result.getString("distributorCity"));
 		distributor.setZipcode(result.getString("distributorState"));
 		List<String> userType = new ArrayList<String>();
-		userType.set(0, Constants.DISTRIBUTOR_TYPE);
+		userType.add(Constants.DISTRIBUTOR_TYPE);
 		distributor.setUserType(userType);
 		return distributor;
 	}

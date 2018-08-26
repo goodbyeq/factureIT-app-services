@@ -147,10 +147,7 @@ public class ManufacturerRepository {
 					+ " dist.manufacturer_first_name AS manufacturerFirstName, dist.manufacturer_last_name AS manufacturerLastName, "
 					+ " dist.manufacturer_phone AS manufacturerPhone, dist.manufacturer_email AS manufacturerEmail, dist.manufacturer_address AS manufacturerAddress, "
 					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode "
-					+ " FROM(" 
-					+ "SELECT *,(((acos(sin(("+latitude+"*pi()/180)) * sin((latitude*pi()/180))+cos(("+latitude+"*pi()/180)) * cos((latitude*pi()/180)) * cos((("+longitude+" - longitude)*pi()/180))))*180/pi())*60*1.1515*1.609344) as distance "
-		    			+ "FROM manufacturer) dist "
-		    			+"WHERE distance <= " + radius;
+					+ " FROM manufacturer dist WHERE earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
 			List<Manufacturer> manufacturers = jdbcTemplate.query(sql, new ManufacturerMapper());
 			return manufacturers;
 		} finally {

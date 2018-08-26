@@ -16,8 +16,8 @@ public class User extends BaseData{
 	private String city;
 	private String state;
 	private String zipcode;
-	private String latitude;
-	private String longitude;
+	private Double latitude;
+	private Double longitude;
 	private String isVerified = "No";
 
 	public String getUsername() {
@@ -110,16 +110,16 @@ public class User extends BaseData{
 	public void setId(String id) {
 		this.id = id;
 	}
-	public String getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(String latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
-	public String getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(String longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 	@Override

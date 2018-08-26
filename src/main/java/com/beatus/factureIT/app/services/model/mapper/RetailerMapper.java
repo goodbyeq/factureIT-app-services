@@ -29,7 +29,7 @@ public class RetailerMapper implements RowMapper<Retailer> {
 		retailer.setState(result.getString("retailerCity"));
 		retailer.setZipcode(result.getString("retailerState"));
 		List<String> userType = new ArrayList<String>();
-		userType.set(0, Constants.DISTRIBUTOR_TYPE);
+		userType.add(Constants.RETAILER_TYPE);
 		retailer.setUserType(userType);
 		return retailer;
 	}

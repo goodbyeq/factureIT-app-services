@@ -135,10 +135,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 					+ " dist.retailer_first_name AS retailerFirstName, dist.retailer_last_name AS retailerLastName, "
 					+ " dist.retailer_phone AS retailerPhone, dist.retailer_email AS retailerEmail, dist.retailer_address AS retailerAddress, "
 					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode "
-					+ " FROM(" 
-					+ "SELECT *,(((acos(sin(("+latitude+"*pi()/180)) * sin((latitude*pi()/180))+cos(("+latitude+"*pi()/180)) * cos((latitude*pi()/180)) * cos((("+longitude+" - longitude)*pi()/180))))*180/pi())*60*1.1515*1.609344) as distance "
-		    			+ "FROM retailer) dist "
-		    			+"WHERE distance <= " + radius;
+					+ " FROM retailer dist WHERE earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
 			List<Retailer> retailers = jdbcTemplate.query(sql, new RetailerMapper());
 			return retailers;
 		} finally {

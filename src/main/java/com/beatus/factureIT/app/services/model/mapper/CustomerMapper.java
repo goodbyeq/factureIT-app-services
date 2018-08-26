@@ -29,7 +29,7 @@ public class CustomerMapper implements RowMapper<Customer> {
 		customer.setState(result.getString("customerCity"));
 		customer.setZipcode(result.getString("customerState"));
 		List<String> userType = new ArrayList<String>();
-		userType.set(0, Constants.DISTRIBUTOR_TYPE);
+		userType.add(Constants.CUSTOMER_TYPE);
 		customer.setUserType(userType);
 		return customer;
 	}

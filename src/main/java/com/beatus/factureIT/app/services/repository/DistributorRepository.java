@@ -141,10 +141,7 @@ public class DistributorRepository {
 					+ " dist.distributor_first_name AS distributorFirstName, dist.distributor_last_name AS distributorLastName, "
 					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
 					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
-					+ " FROM(" 
-					+ "SELECT *,(((acos(sin(("+latitude+"*pi()/180)) * sin((latitude*pi()/180))+cos(("+latitude+"*pi()/180)) * cos((latitude*pi()/180)) * cos((("+longitude+" - longitude)*pi()/180))))*180/pi())*60*1.1515*1.609344) as distance "
-		    			+ "FROM distributor) dist "
-		    			+"WHERE distance <= " + radius;
+					+ " FROM distributor dist WHERE earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
 			List<Distributor> distributors = jdbcTemplate.query(sql, new DistributorMapper());
 			return distributors;
 		} finally {
