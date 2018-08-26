@@ -47,6 +47,22 @@ public class CustomerController {
 			return new JSendResponse<Customer>(Constants.SUCCESS, customer);
 		}
 	}
+	
+	public static JSendResponse<String> jsend(boolean response) {
+		if (response) {
+			return new JSendResponse<String>(Constants.SUCCESS, "Request processed Successfully");
+		} else {
+			return new JSendResponse<String>(Constants.FAILURE, "Request Processing failed");
+		}
+	}
+	
+	public static JSendResponse<String> jsend(String response) {
+		if (response == null) {
+			return new JSendResponse<String>(Constants.SUCCESS, "Request processed Successfully");
+		} else {
+			return new JSendResponse<String>(Constants.FAILURE, "Request Processing failed");
+		}
+	}
 
 	@RequestMapping(value = Constants.WEB_CUSTOMER_GET_CUSTOMER_BY_ID, method = RequestMethod.GET)
 	public @ResponseBody JSendResponse<Customer> getCustomerByIdGet(HttpServletRequest request,

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.beatus.factureIT.app.services.model.Distributor;
 import com.beatus.factureIT.app.services.model.DistributorResponse;
 import com.beatus.factureIT.app.services.model.JSendResponse;
-import com.beatus.factureIT.app.services.model.UserCreatedResponse;
+import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.service.DistributorService;
 import com.beatus.factureIT.app.services.utils.Constants;
 
@@ -45,6 +45,30 @@ public class DistributorsController {
 			return new JSendResponse<Distributor>(Constants.FAILURE, distributor);
 		} else {
 			return new JSendResponse<Distributor>(Constants.SUCCESS, distributor);
+		}
+	}
+	
+	public static JSendResponse<String> jsend(boolean response) {
+		if (response) {
+			return new JSendResponse<String>(Constants.SUCCESS, "Request processed Successfully");
+		} else {
+			return new JSendResponse<String>(Constants.FAILURE, "Request Processing failed");
+		}
+	}
+	
+	public static JSendResponse<String> jsend(String response) {
+		if (response == null) {
+			return new JSendResponse<String>(Constants.SUCCESS, "Request processed Successfully");
+		} else {
+			return new JSendResponse<String>(Constants.FAILURE, "Request Processing failed");
+		}
+	}
+	
+	public static JSendResponse<List<?>> jsend(List<?> response) {
+		if (response == null || response == null) {
+			return new JSendResponse<List<?>>(Constants.FAILURE, response);
+		} else {
+			return new JSendResponse<List<?>>(Constants.SUCCESS, response);
 		}
 	}
 
@@ -77,4 +101,55 @@ public class DistributorsController {
 		resp.setDistributors(distributors);
 		return jsend(resp);
 	}
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_GET_ALL_DISTRIBUTORS_BY_AREA, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<DistributorResponse> getAllDistributorsInASpecificArea(HttpServletRequest request,
+			ModelMap model, @RequestParam String latitude,  @RequestParam String longitude,  @RequestParam String radius) throws ClassNotFoundException, SQLException {
+		List<Distributor> distributors = distributorService.getAllDistributorsInASpecificArea(latitude, longitude, radius);
+		LOGGER.info("After the get call and the distributors are " + distributors != null
+				? distributors.size() > 0 ? distributors.get(0).getFirstname() : "No Distributor data"
+				: "No Distributor data");
+		DistributorResponse resp = new DistributorResponse();
+		resp.setDistributors(distributors);
+		return jsend(resp);
+	}
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_ADD_DISTRIBUTOR, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> addDistributorPost(HttpServletRequest request,
+			ModelMap model, @RequestParam Distributor distributor) throws ClassNotFoundException, SQLException {
+		String id = distributorService.addDistributor(distributor);
+		LOGGER.info("After the add call and the distributor " + distributor != null
+				? distributor.getFirstname() : "No Distributor data" + " got added successfully");
+		return jsend(id);
+	}
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_EDIT_DISTRIBUTOR, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> editDistributorPost(HttpServletRequest request,
+			ModelMap model, @RequestParam Distributor distributor) throws ClassNotFoundException, SQLException {
+		boolean isDistributorEdited = distributorService.editDistributor(distributor);
+		LOGGER.info("After the edit call and the distributor " + distributor != null
+				? distributor.getFirstname() : "No Distributor data" + " got edited successfully");
+		return jsend(isDistributorEdited);
+	}
+	
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_ADD_RELATED_RETAILER, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> addDistributorRelatedRetailersPost(HttpServletRequest request,
+			ModelMap model, @RequestParam List<String> retailerIds, @RequestParam String distributorId) throws ClassNotFoundException, SQLException {
+		boolean isRetailerAdded = distributorService.addDistributorRelatedRetailers(retailerIds, distributorId);
+		LOGGER.info("After the add related retailers call for the distributor with Id: " + distributorId != null
+				? distributorId : "No Distributor data");
+		return jsend(isRetailerAdded);
+	}
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_GET_RELATED_RETAILER, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<List<?>> getDistributorRelatedRetailers(HttpServletRequest request,
+			ModelMap model,  @RequestParam String distributorId) throws ClassNotFoundException, SQLException {
+		List<Retailer> retailers = distributorService.getDistributorRelatedRetailers(distributorId);
+		LOGGER.info("After the get call for the retailers related to distributors with ID:" + distributorId != null
+				? distributorId : "No Distributor data");
+		return jsend(retailers);
+	}
+	
+	
 }

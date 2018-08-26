@@ -43,20 +43,21 @@ public class DistributorRepository {
 
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public boolean addDistributor(User distributor) throws ClassNotFoundException, SQLException {
+	public String addDistributor(User distributor) throws ClassNotFoundException, SQLException {
 
 		try {
 			LOGGER.info("In addDistributor");
-			String sql = "INSERT INTO distributor (distributor_id, distributor_company_id, uid, distributor_company_name, dictributor_company_type, distributor_first_name, distributor_last_name, distributor_phone, distributor_email, distributor_address, distributor_city, distributor_state, distributor_zipcode ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			int rowsInserted = jdbcTemplate.update(sql, Utils.generateRandomKey(50), distributor.getCompanyId(), distributor.getUid(),
+			String sql = "INSERT INTO distributor (distributor_id, distributor_company_id, uid, distributor_company_name, distributor_company_type, distributor_first_name, distributor_last_name, distributor_phone, distributor_email, distributor_address, distributor_city, distributor_state, distributor_zipcode, latitude, longitude ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String id = Utils.generateRandomKey(50);
+			int rowsInserted = jdbcTemplate.update(sql, id , Utils.generateRandomKey(50), distributor.getUid(),
 					distributor.getCompanyName(), distributor.getCompanyType(), distributor.getFirstname(), distributor.getLastname(), distributor.getPhone(), distributor.getEmail(), 
-					distributor.getAddress(), distributor.getCity(), distributor.getState(), distributor.getZipcode());
+					distributor.getAddress(), distributor.getCity(), distributor.getState(), distributor.getZipcode(), distributor.getLatitude(), distributor.getLongitude());
 		
 			if (rowsInserted > 0) {
 				LOGGER.info("A new distributor was inserted successfully!");
-				return true;
+				return id;
 			} else {
-				return false;
+				return null;
 			}
 		} finally {
 		}
@@ -125,6 +126,25 @@ public class DistributorRepository {
 					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
 					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
 					+ " FROM distributor dist";
+			List<Distributor> distributors = jdbcTemplate.query(sql, new DistributorMapper());
+			return distributors;
+		} finally {
+		}
+	}
+	
+	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
+	public List<Distributor> getAllDistributorsInASpecificArea(String latitude, String longitude, String radius) throws ClassNotFoundException, SQLException {
+		try {
+			LOGGER.info("In getAllDistributorsInASpecificArea");
+			String sql = "SELECT dist.distributor_id AS distributorId, dist.distributor_company_name AS distributorCompanyName, "
+					+ " dist.distributor_company_type AS distributorCompanyType, dist.distributor_company_id AS distributorCompanyId, dist.uid AS uid, "
+					+ " dist.distributor_first_name AS distributorFirstName, dist.distributor_last_name AS distributorLastName, "
+					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
+					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
+					+ " FROM(" 
+					+ "SELECT *,(((acos(sin(("+latitude+"*pi()/180)) * sin((latitude*pi()/180))+cos(("+latitude+"*pi()/180)) * cos((latitude*pi()/180)) * cos((("+longitude+" - longitude)*pi()/180))))*180/pi())*60*1.1515*1.609344) as distance "
+		    			+ "FROM distributor) dist "
+		    			+"WHERE distance <= " + radius;
 			List<Distributor> distributors = jdbcTemplate.query(sql, new DistributorMapper());
 			return distributors;
 		} finally {

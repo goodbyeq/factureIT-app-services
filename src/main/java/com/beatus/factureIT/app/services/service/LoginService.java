@@ -77,14 +77,19 @@ public class LoginService {
 		return loginResp;
 	}
 
-	public String addUserToCompany(User user) {
-		String userCreatedResp = null;
-		/*try {
-			userCreatedResp = loginRepository.addUserToCompany(user);
-		} catch (SQLException e) {
+	public UserCreatedResponse addUserProfile(User user){
+		String userCreatedResp;
+		UserCreatedResponse resp = new UserCreatedResponse();
+		try {
+			userCreatedResp = loginRepository.addUserProfile(user);
+			user.setPassword(null);
+			resp.setUser(user);
+			resp.setResponse(userCreatedResp);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
 			userCreatedResp = Constants.ERROR_USER_CREATION;
-		}*/
-		return userCreatedResp;
+		}
+		return resp;
 	}
 
 	public UserCreatedResponse createUser(User user) {
@@ -92,13 +97,15 @@ public class LoginService {
 		String userCreatedResp;
 		UserCreatedResponse resp = new UserCreatedResponse();
 		try {
-			user.setUsername(user.getPhone());
+			if (StringUtils.isBlank(user.getUsername())) {
+				user.setUsername(user.getPhone());
+			}
 			user.setIsVerified("No");
 			if (StringUtils.isNotBlank(user.getPhone())) {
 				User userfromDb = loginRepository.getUserByUsername(user.getUsername());
-				LOGGER.info("userfromDb : " + userfromDb.toString());
+				LOGGER.info("userfromDb : " + userfromDb);
 
-				if (userfromDb.getUsername() != null) {
+				if (userfromDb != null && userfromDb.getUsername() != null) {
 					resp.setResponse(Constants.ERROR_USER_WITH_SAME_PHONE_EXISTS);
 					return resp;
 				}
@@ -119,9 +126,10 @@ public class LoginService {
 			if (StringUtils.isBlank(user.getUid())) {
 				user.setUid(Utils.generateRandomKey(50));
 			}
-			/*if (StringUtils.isBlank(user.getUserType())) {
-				user.setUserType(Constants.USER_ADMIN);
-			}*/
+			/*
+			 * if (StringUtils.isBlank(user.getUserType())) {
+			 * user.setUserType(Constants.USER_ADMIN); }
+			 */
 			if (StringUtils.isBlank(user.getCompanyId())) {
 				companyId = Utils.generateRandomKey(50);
 				user.setCompanyId(companyId);

@@ -1,6 +1,5 @@
 package com.beatus.factureIT.app.services.repository;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -42,20 +41,21 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public boolean addRetailer(User retailer) throws ClassNotFoundException, SQLException {
+	public String addRetailer(User retailer) throws ClassNotFoundException, SQLException {
 
 		try {
 			LOGGER.info("In addRetailer");
-			String sql = "INSERT INTO retailer (retailer_id, retailer_company_id, uid, retailer_company_name, dictributor_company_type, retailer_first_name, retailer_last_name, retailer_phone, retailer_email, retailer_address, retailer_city, retailer_state, retailer_zipcode ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			int rowsInserted = jdbcTemplate.update(sql, Utils.generateRandomKey(50), retailer.getCompanyId(), retailer.getUid(),
+			String id = Utils.generateRandomKey(50);
+			String sql = "INSERT INTO retailer (retailer_id, retailer_company_id, uid, retailer_company_name, retailer_company_type, retailer_first_name, retailer_last_name, retailer_phone, retailer_email, retailer_address, retailer_city, retailer_state, retailer_zipcode, latitude, longitude ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			int rowsInserted = jdbcTemplate.update(sql, id, Utils.generateRandomKey(50), retailer.getUid(),
 					retailer.getCompanyName(), retailer.getCompanyType(), retailer.getFirstname(), retailer.getLastname(), retailer.getPhone(), retailer.getEmail(), 
-					retailer.getAddress(), retailer.getCity(), retailer.getState(), retailer.getZipcode());
+					retailer.getAddress(), retailer.getCity(), retailer.getState(), retailer.getZipcode(), retailer.getLatitude(), retailer.getLongitude());
 		
 			if (rowsInserted > 0) {
 				LOGGER.info("A new retailer was inserted successfully!");
-				return true;
+				return id;
 			} else {
-				return false;
+				return null;
 			}
 		} finally {
 		}
@@ -125,6 +125,26 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 		} finally {
 		}
 	}
+	
+	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
+	public List<Retailer> getAllRetailersInASpecificArea(String latitude, String longitude, String radius) throws ClassNotFoundException, SQLException {
+		try {
+			LOGGER.info("In getAllRetailersInASpecificArea");
+			String sql = "SELECT dist.retailer_id AS retailerId, dist.retailer_company_name AS retailerCompanyName, "
+					+ " dist.retailer_company_type AS retailerCompanyType, dist.retailer_company_id AS retailerCompanyId, dist.uid AS uid, "
+					+ " dist.retailer_first_name AS retailerFirstName, dist.retailer_last_name AS retailerLastName, "
+					+ " dist.retailer_phone AS retailerPhone, dist.retailer_email AS retailerEmail, dist.retailer_address AS retailerAddress, "
+					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode "
+					+ " FROM(" 
+					+ "SELECT *,(((acos(sin(("+latitude+"*pi()/180)) * sin((latitude*pi()/180))+cos(("+latitude+"*pi()/180)) * cos((latitude*pi()/180)) * cos((("+longitude+" - longitude)*pi()/180))))*180/pi())*60*1.1515*1.609344) as distance "
+		    			+ "FROM retailer) dist "
+		    			+"WHERE distance <= " + radius;
+			List<Retailer> retailers = jdbcTemplate.query(sql, new RetailerMapper());
+			return retailers;
+		} finally {
+		}
+	}
+
 	
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public boolean addRetailerRelatedDistributors(List<String> distributorIds, String retailerId) {

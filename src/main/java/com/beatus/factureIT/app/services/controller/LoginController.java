@@ -92,20 +92,15 @@ public class LoginController {
 		LOGGER.info("In signup Resp : " + signupResp.getResponse());
 		return jsend(signupResp);
 	}
-
-	@RequestMapping(value = Constants.WEB_USER_ADD_COMPANY_USER, method = RequestMethod.POST)
-	public String addCompanyUserPost(HttpServletRequest request, User user, ModelMap model)
-			throws ClassNotFoundException, SQLException {
-		/*
-		 * String companyId = (String) request.getAttribute(Constants.COMPANY_ID);
-		 * String uid = (String) request.getAttribute(Constants.USERNAME);
-		 */
-		String signupResp = loginService.addUserToCompany(user);
-		if (StringUtils.isNotBlank(signupResp) && Constants.USER_CREATED.equalsIgnoreCase(signupResp)) {
-			return Constants.REDIRECT + "/user/profile";
-		} else {
-			model.addAttribute("errorResp", signupResp);
-			return "login/request-signup";
-		}
+	
+	@RequestMapping(value = Constants.WEB_USER_ADD_PROFILE, method = RequestMethod.POST, consumes = ManufacturerAppMediaType.APPLICATION_JSON, produces = ManufacturerAppMediaType.APPLICATION_JSON)
+	public @ResponseBody JSendResponse<UserCreatedResponse> addProfile(HttpServletRequest request,
+			@RequestBody User user, ModelMap model) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In signup");
+		UserCreatedResponse signupResp = loginService.addUserProfile(user);
+		LOGGER.info("In signup Resp : " + signupResp.getResponse());
+		return jsend(signupResp);
 	}
+
+
 }

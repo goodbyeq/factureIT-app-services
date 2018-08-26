@@ -95,8 +95,32 @@ public class Constants {
 	public static final String WEB_RETAILER_GET_ALL_RETAILERS = "/getAllRetailers";
 	public static final String WEB_RETAILER_GET_RETAILER_BY_UID = "/getRetailerByUID";
 	public static final String WEB_RETAILER_GET_RETAILER_BY_ID = "/getRetailerById";
+	public static final String WEB_MANUFACTURER_ADD_MANUFACTURER = "/addManufacturer";
+	public static final String WEB_MANUFACTURER_EDIT_MANUFACTURER = "/editManufacturer";
+	public static final String WEB_MANUFACTURER_ADD_PRODUCTS = "/addProducts";
+	public static final String WEB_MANUFACTURER_ADD_CATEGORIES = "/addCategories";
+	public static final String WEB_MANUFACTURER_GET_PRODUCTS = "/getProductsByManufacturerID";
+	public static final String WEB_MANUFACTURER_GET_PRODUCT_CATEGORIES = "/getProductCategoriesByManufacturerID";
+	public static final String WEB_MANUFACTURER_ADD_RELATED_DISTRIBUTORS = "/addRelatedDistributors";
+	public static final String WEB_MANUFACTURER_GET_RELATED_DISTRIBUTORS = "/getRelatedDistributors";
+	public static final String WEB_MANUFACTURER_ADD_ROUTE = "/addRoute";
+	public static final String WEB_MANUFACTURER_DELETE_MANUFACTURER = "/deleteManufacturer";
+	
+	public static final String WEB_DISTRIBUTOR_ADD_RELATED_RETAILER = "/addRelatedDistributors";
+	public static final String WEB_DISTRIBUTOR_GET_RELATED_RETAILER = "/getRelatedDistributors";
+	
+	
+	public static final String WEB_RETAILER_ADD_RETAILER = "/addRetailer";
+	public static final String WEB_RETAILER_EDIT_RETAILER = "/editRetailer";
+	public static final String WEB_RETAILER_ADD_RELATED_DISTRIBUTORS = "/addRelatedDistributors";
+	public static final String WEB_RETAILER_GET_RELATED_DISTRIBUTORS = "/getRelatedDistributors";
+	
 	
     public static final String WEB_MANUFACTURER_REQUEST = "/manufacturer";
     public static final String WEB_RETAILER_REQUEST = "/retailer";
     public static final String WEB_CUSTOMER_REQUEST = "/customer";
+	public static final String WEB_USER_ADD_PROFILE = "/addProfile";
+	public static final String WEB_DISTRIBUTOR_GET_ALL_DISTRIBUTORS_BY_AREA = "/getDistributorsByArea";
+	public static final String WEB_MANUFACTURER_GET_ALL_MANUFACTURERS_BY_AREA = "/getManufacturersByArea";
+	public static final String WEB_RETAILER_GET_ALL_RETAILERS_BY_AREA = "/getRetailersByArea";
 }

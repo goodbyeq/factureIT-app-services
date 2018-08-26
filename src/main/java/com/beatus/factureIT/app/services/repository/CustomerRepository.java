@@ -37,20 +37,21 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CustomerRepository.
 
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public boolean addCustomer(User customer) throws ClassNotFoundException, SQLException {
+	public String addCustomer(User customer) throws ClassNotFoundException, SQLException {
 
 		try {
 			LOGGER.info("In addCustomer");
-			String sql = "INSERT INTO customer (customer_id, customer_company_id, uid, customer_company_name, dictributor_company_type, customer_first_name, customer_last_name, customer_phone, customer_email, customer_address, customer_city, customer_state, customer_zipcode ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			int rowsInserted = jdbcTemplate.update(sql, Utils.generateRandomKey(50), customer.getCompanyId(), customer.getUid(),
+			String id = Utils.generateRandomKey(50);
+			String sql = "INSERT INTO customer (customer_id, uid, customer_first_name, customer_last_name, customer_phone, customer_email, customer_address, customer_city, customer_state, customer_zipcode, latitude, longitude ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			int rowsInserted = jdbcTemplate.update(sql, id, Utils.generateRandomKey(50), customer.getUid(),
 					customer.getCompanyName(), customer.getCompanyType(), customer.getFirstname(), customer.getLastname(), customer.getPhone(), customer.getEmail(), 
-					customer.getAddress(), customer.getCity(), customer.getState(), customer.getZipcode());
+					customer.getAddress(), customer.getCity(), customer.getState(), customer.getZipcode(), customer.getLatitude(), customer.getLongitude());
 		
 			if (rowsInserted > 0) {
 				LOGGER.info("A new customer was inserted successfully!");
-				return true;
+				return id;
 			} else {
-				return false;
+				return null;
 			}
 		} finally {
 		}

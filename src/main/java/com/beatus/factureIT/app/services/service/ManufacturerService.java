@@ -10,7 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.beatus.factureIT.app.services.model.CollectionAgent;
+import com.beatus.factureIT.app.services.model.Distributor;
 import com.beatus.factureIT.app.services.model.Manufacturer;
+import com.beatus.factureIT.app.services.model.Product;
+import com.beatus.factureIT.app.services.model.ProductCategory;
+import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.app.services.repository.ManufacturerRepository;
 
 @Service
@@ -39,5 +44,64 @@ public class ManufacturerService {
 		List<Manufacturer> manufacturers = manufacturerRepository.getAllManufacturers();
 		return manufacturers;
 	}
+	
+	public String addManufacturer(User manufacturer) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addManufacturer");
+		String id = manufacturerRepository.addManufacturer(manufacturer);
+		return id;
+	}
+	
+	public boolean editManufacturer(User manufacturer) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In editManufacturer");
+		boolean isManufacturerEdited = manufacturerRepository.editManufacturer(manufacturer);
+		return isManufacturerEdited;
+	}
+	
+	public boolean addProductsForManufacturer(List<Product> products, String manufacturerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addProductsForManufacturer");
+		boolean isProductsAdded = manufacturerRepository.addProductsForManufacturer(products, manufacturerId);
+		return isProductsAdded;
+	}
+	
+	public boolean addProductCategoriesForManufacturer(List<ProductCategory> productCategories, String manufacturerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addProductCategoriesForManufacturer");
+		boolean isCategoriesAdded = manufacturerRepository.addProductCategoriesForManufacturer(productCategories, manufacturerId);
+		return isCategoriesAdded;
+	}
 
+	public List<Product> getAllProductsOfManufacturer(String manufacturerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getAllProductsOfManufacturer");
+		List<Product> manufacturerProducts = manufacturerRepository.getAllProductsOfManufacturer(manufacturerId);
+		return manufacturerProducts;
+	}
+	
+	public List<ProductCategory> getAllProductCategoriesOfManufacturer(String manufacturerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getAllProductCategoriesOfManufacturer");
+		List<ProductCategory> manufacturerProductCategories = manufacturerRepository.getAllProductCategoriesOfManufacturer(manufacturerId);
+		return manufacturerProductCategories;
+	}
+	
+	public boolean addManufacturerRelatedDistributors(List<String> distributorIds, String manufacturerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addManufacturerRelatedDistributors");
+		boolean isDistributorAdded = manufacturerRepository.addManufacturerRelatedDistributors(distributorIds, manufacturerId);
+		return isDistributorAdded;
+	}
+	
+	public List<Distributor> getManufacturerRelatedDistributors(String manufacturerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getManufacturerRelatedDistributors");
+		List<Distributor> distributors = manufacturerRepository.getManufacturerRelatedDistributors(manufacturerId);
+		return distributors;
+	}
+	
+	public void deleteManufacturer(int manufacturerId, String companyId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In deleteManufacturer");
+		manufacturerRepository.deleteManufacturer(manufacturerId, companyId);
+	}
+	
+	public List<Manufacturer> getAllManufacturersInASpecificArea(String latitude, String longitude, String radius) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getAllManufacturersInASpecificArea");
+		List<Manufacturer> manufacturers = manufacturerRepository.getAllManufacturersInASpecificArea(latitude, longitude, radius);
+		return manufacturers;
+	}
+	
 }

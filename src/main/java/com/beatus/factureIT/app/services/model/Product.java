@@ -9,6 +9,8 @@ public class Product  extends BaseData implements Comparable<Product>{
 	private String productCategoryId;
 	private String brandName;
 	private String hsnCode;
+	private String price;
+	private String unit;
 	
 	public String getProductId() {
 		return productId;
@@ -78,4 +80,21 @@ public class Product  extends BaseData implements Comparable<Product>{
 	public void setHsnCode(String hsnCode) {
 		this.hsnCode = hsnCode;
 	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+	
 }

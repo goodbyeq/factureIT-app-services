@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.beatus.factureIT.app.services.model.Distributor;
+import com.beatus.factureIT.app.services.model.JSendResponse;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.RetailerResponse;
-import com.beatus.factureIT.app.services.model.JSendResponse;
-import com.beatus.factureIT.app.services.model.UserCreatedResponse;
 import com.beatus.factureIT.app.services.service.RetailerService;
 import com.beatus.factureIT.app.services.utils.Constants;
 
@@ -45,6 +45,30 @@ public class RetailerController {
 			return new JSendResponse<Retailer>(Constants.FAILURE, retailer);
 		} else {
 			return new JSendResponse<Retailer>(Constants.SUCCESS, retailer);
+		}
+	}
+	
+	public static JSendResponse<String> jsend(boolean response) {
+		if (response) {
+			return new JSendResponse<String>(Constants.SUCCESS, "Request processed Successfully");
+		} else {
+			return new JSendResponse<String>(Constants.FAILURE, "Request Processing failed");
+		}
+	}
+	
+	public static JSendResponse<String> jsend(String response) {
+		if (response == null) {
+			return new JSendResponse<String>(Constants.SUCCESS, "Request processed Successfully");
+		} else {
+			return new JSendResponse<String>(Constants.FAILURE, "Request Processing failed");
+		}
+	}
+	
+	public static JSendResponse<List<?>> jsend(List<?> response) {
+		if (response == null || response == null) {
+			return new JSendResponse<List<?>>(Constants.FAILURE, response);
+		} else {
+			return new JSendResponse<List<?>>(Constants.SUCCESS, response);
 		}
 	}
 
@@ -77,4 +101,55 @@ public class RetailerController {
 		resp.setRetailers(retailers);
 		return jsend(resp);
 	}
+	
+	@RequestMapping(value = Constants.WEB_RETAILER_GET_ALL_RETAILERS_BY_AREA, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<RetailerResponse> getAllRetailersInASpecificArea(HttpServletRequest request,
+			ModelMap model, @RequestParam String latitude,  @RequestParam String longitude,  @RequestParam String radius) throws ClassNotFoundException, SQLException {
+		List<Retailer> retailers = retailerService.getAllRetailersInASpecificArea(latitude, longitude, radius);
+		LOGGER.info("After the get call and the retailers are " + retailers != null
+				? retailers.size() > 0 ? retailers.get(0).getFirstname() : "No Retailer data"
+				: "No Retailer data");
+		RetailerResponse resp = new RetailerResponse();
+		resp.setRetailers(retailers);
+		return jsend(resp);
+	}
+	
+	@RequestMapping(value = Constants.WEB_RETAILER_ADD_RETAILER, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> addRetailerPost(HttpServletRequest request,
+			ModelMap model, @RequestParam Retailer retailer) throws ClassNotFoundException, SQLException {
+		String id = retailerService.addRetailer(retailer);
+		LOGGER.info("After the add call and the retailer " + retailer != null
+				? retailer.getFirstname() : "No Retailer data" + " got added successfully");
+		return jsend(id);
+	}
+	
+	@RequestMapping(value = Constants.WEB_RETAILER_EDIT_RETAILER, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> editRetailerPost(HttpServletRequest request,
+			ModelMap model, @RequestParam Retailer retailer) throws ClassNotFoundException, SQLException {
+		boolean isRetailerEdited = retailerService.editRetailer(retailer);
+		LOGGER.info("After the edit call and the retailer " + retailer != null
+				? retailer.getFirstname() : "No Retailer data" + " got edited successfully");
+		return jsend(isRetailerEdited);
+	}
+	
+	@RequestMapping(value = Constants.WEB_RETAILER_ADD_RELATED_DISTRIBUTORS, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> addRetailerRelatedDistributorsPost(HttpServletRequest request,
+			ModelMap model, @RequestParam List<String> distributorIds, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+		boolean isDistributorAdded = retailerService.addRetailerRelatedDistributors(distributorIds, retailerId);
+		LOGGER.info("After the add products call for the retailer with Id: " + retailerId != null
+				? retailerId : "No Retailer data");
+		return jsend(isDistributorAdded);
+	}
+	
+	@RequestMapping(value = Constants.WEB_RETAILER_GET_RELATED_DISTRIBUTORS, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<List<?>> getRetailerRelatedDistributorsGet(HttpServletRequest request,
+			ModelMap model,  @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+		List<Distributor> distributors = retailerService.getRetailerRelatedDistributors(retailerId);
+		LOGGER.info("After the get call for the distributors related to retailer with ID:" + retailerId != null
+				? retailerId : "No Retailer data");
+		return jsend(distributors);
+	}
+	
+	
+
 }
