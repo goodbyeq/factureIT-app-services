@@ -1,5 +1,6 @@
 package com.beatus.factureIT.app.services.repository;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.app.services.model.mapper.UserMapper;
 import com.beatus.factureIT.app.services.utils.Constants;
 import com.beatus.factureIT.app.services.utils.Utils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component("loginRepository")
 public class LoginRepository {
@@ -76,36 +78,34 @@ public class LoginRepository {
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public String addUserProfile(User user) throws ClassNotFoundException, SQLException {
-		StringBuilder resp = new StringBuilder();
 		if (user.getUserType() != null && user.getUserType().size() > 0) {
 			try {
 				LOGGER.info("In adduser");
+				UserTypeIds userTypeIds = new UserTypeIds();
 				for (String type : user.getUserType()) {
-					resp.append("{ ");
 					if (Constants.DISTRIBUTOR_TYPE.equals(type)) {
-						resp.append("\"Distributor_id\" : ");
 						String id = distributorRepository.addDistributor(user);
-						resp.append("\"" +id + "\", ");
+						userTypeIds.setDistributorId(id);
 					}
 					if (Constants.RETAILER_TYPE.equals(type)) {
-						resp.append("\"Retailer_id\" : ");
 						String id =  retailerRepository.addRetailer(user);
-						resp.append("\"" +id + "\", ");
+						userTypeIds.setRetailerId(id);
 					}
 					if (Constants.CUSTOMER_TYPE.equals(type)) {
-						resp.append("\"Customer_id\" : ");
 						String id =  customerRepository.addCustomer(user);
-						resp.append("\"" +id + "\", ");
+						userTypeIds.setCustomerId(id);
 					}
 					if (Constants.MANUFACTURER_TYPE.equals(type)) {
-						resp.append("\"Manufacturer_id\" : ");
 						String id = manufacturerRepository.addManufacturer(user);
-						resp.append("\"" +id + "\", ");
+						userTypeIds.setManufacturerId(id);
 					}
-					resp.append(" } ");
 				}
-				return resp.toString();
-			} finally {
+				ObjectMapper mapperObj = new ObjectMapper();
+				String jsonStr = mapperObj.writeValueAsString(userTypeIds);
+				return jsonStr;
+			}catch (IOException e) {
+				return Constants.ERROR_CONVERTING_IDS_STRING;
+			}finally {
 
 			}
 		}
@@ -131,5 +131,44 @@ public class LoginRepository {
 		List<User> users = jdbcTemplate.query(sql, new Object[] { username }, new UserMapper());
 		LOGGER.info("The user returned " + users != null ? users.toString() : null);
 		return users != null ? users.size() > 0 ? users.get(0) : null : null;
+	}
+	
+	class UserTypeIds {
+		private String manufacturerId;
+		private String distributorId;
+		private String retailerId;
+		private String customerId;
+		private String collectionAgentId;
+		
+		public String getManufacturerId() {
+			return manufacturerId;
+		}
+		public void setManufacturerId(String manufacturerId) {
+			this.manufacturerId = manufacturerId;
+		}
+		public String getDistributorId() {
+			return distributorId;
+		}
+		public void setDistributorId(String distributorId) {
+			this.distributorId = distributorId;
+		}
+		public String getRetailerId() {
+			return retailerId;
+		}
+		public void setRetailerId(String retailerId) {
+			this.retailerId = retailerId;
+		}
+		public String getCustomerId() {
+			return customerId;
+		}
+		public void setCustomerId(String customerId) {
+			this.customerId = customerId;
+		}
+		public String getCollectionAgentId() {
+			return collectionAgentId;
+		}
+		public void setCollectionAgentId(String collectionAgentId) {
+			this.collectionAgentId = collectionAgentId;
+		}
 	}
 }

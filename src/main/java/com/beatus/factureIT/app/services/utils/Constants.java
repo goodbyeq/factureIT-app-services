@@ -123,4 +123,5 @@ public class Constants {
 	public static final String WEB_DISTRIBUTOR_GET_ALL_DISTRIBUTORS_BY_AREA = "/getDistributorsByArea";
 	public static final String WEB_MANUFACTURER_GET_ALL_MANUFACTURERS_BY_AREA = "/getManufacturersByArea";
 	public static final String WEB_RETAILER_GET_ALL_RETAILERS_BY_AREA = "/getRetailersByArea";
+	public static final String ERROR_CONVERTING_IDS_STRING = "Error Converting Ids into JSON.";
 }

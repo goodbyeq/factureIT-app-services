@@ -113,10 +113,13 @@ public class ApplicationConfiguration {
     @Bean
     public DriverManagerDataSource driverManagerDataSource() throws ClassNotFoundException {
 
-	    //String dbURL = "jdbc:mysql://localhost:3306/sys?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 		String dbURL = "jdbc:postgresql://facture-it.c9rqdaqzwimk.ap-south-1.rds.amazonaws.com:5432/facture_it_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 		String username = "facture_it_services_user";
 		String password = "facture_it_services_password";
+		/*String dbURL = "jdbc:postgresql://localhost:5432/sys?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";	
+		String username = "postgres";
+		String password = "postgres";*/
+
 		
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("org.postgresql.Driver");
