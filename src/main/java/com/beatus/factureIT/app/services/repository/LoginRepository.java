@@ -7,6 +7,8 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import main.java.com.beatus.factureIT.app.services.model.UserDeviceInfo;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +77,28 @@ public class LoginRepository {
 		}
 		return Constants.ERROR_USER_CREATION;
 	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public String addUserDeviceInfo(UserDeviceInfo userDeviceInfo) throws ClassNotFoundException, SQLException {
+		if (userDeviceInfo != null && userDeviceInfo.getDeviceId() != null) {
+			try {
+				LOGGER.info("In addUserDeviceInfo");
+				String sql = "INSERT INTO users_device_info (users_device_info_id, device_id, firebase_id, gcm_id, vision_id, uid) VALUES (?, ?, ?, ?, ?, ?)";
+				int rowsInserted = jdbcTemplate.update(sql, Utils.generateRandomKey(50), userDeviceInfo.getDeviceId(), userDeviceInfo.getFirebaseId(),
+						userDeviceInfo.getGcmId(), userDeviceInfo.getVisionId(), userDeviceInfo.getUid());
+
+				if (rowsInserted > 0) {
+					LOGGER.info("A new user device info was inserted successfully!");
+					return Constants.USER_CREATED;
+				} else {
+					return Constants.ERROR_USER_CREATION;
+				}
+			} finally {
+
+			}
+		}
+		return Constants.ERROR_USER_CREATION;
+	}
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public String addUserProfile(User user) throws ClassNotFoundException, SQLException {
@@ -102,7 +126,7 @@ public class LoginRepository {
 				}
 				ObjectMapper mapperObj = new ObjectMapper();
 				String jsonStr = mapperObj.writeValueAsString(userTypeIds);
-				return jsonStr;
+				return jsonStr.replaceAll("\\\\", "");
 			}catch (IOException e) {
 				return Constants.ERROR_CONVERTING_IDS_STRING;
 			}finally {

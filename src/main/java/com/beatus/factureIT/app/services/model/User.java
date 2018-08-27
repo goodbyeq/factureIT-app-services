@@ -19,6 +19,7 @@ public class User extends BaseData{
 	private Double latitude;
 	private Double longitude;
 	private String isVerified = "No";
+	private UserDeviceInfo userDeviceInfo;
 
 	public String getUsername() {
 		return username;
@@ -121,6 +122,12 @@ public class User extends BaseData{
 	}
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+	public UserDeviceInfo getUserDeviceInfo() {
+		return userDeviceInfo;
+	}
+	public void setUserDeviceInfo(UserDeviceInfo userDeviceInfo) {
+		this.userDeviceInfo = userDeviceInfo;
 	}
 	@Override
 	public String toString() {
