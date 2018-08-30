@@ -124,4 +124,12 @@ public class Constants {
 	public static final String WEB_MANUFACTURER_GET_ALL_MANUFACTURERS_BY_AREA = "/getManufacturersByArea";
 	public static final String WEB_RETAILER_GET_ALL_RETAILERS_BY_AREA = "/getRetailersByArea";
 	public static final String ERROR_CONVERTING_IDS_STRING = "Error Converting Ids into JSON.";
+	public static final String USER_DEVICE_INFO_CREATED = "User Device info created/updated";
+	public static final String ERROR_USER_DEVICE_INFO_CREATION = "Error creating user device info created/updated";
+	public static final String ZERO_DOUBLE_AMOUNT = "0.00";
+	public static final String NO = "No";
+	public static final String YES = "Yes";
+	public static final String COLLECTION_AGENT_ROUTES_CREATED_OR_UPDATED = "Collection Agent Routes Created";
+	public static final String ERROR_CREATING_OR_UPDATING_COLLECTION_AGENT_ROUTES = "Error creating collection agent routes";
+	
 }

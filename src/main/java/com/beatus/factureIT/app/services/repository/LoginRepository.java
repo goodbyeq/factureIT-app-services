@@ -7,8 +7,6 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
-import main.java.com.beatus.factureIT.app.services.model.UserDeviceInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.beatus.factureIT.app.services.model.CollectionAgent;
 import com.beatus.factureIT.app.services.model.User;
+import com.beatus.factureIT.app.services.model.UserDeviceInfo;
+import com.beatus.factureIT.app.services.model.mapper.UserDeviceInfoMapper;
 import com.beatus.factureIT.app.services.model.mapper.UserMapper;
 import com.beatus.factureIT.app.services.utils.Constants;
 import com.beatus.factureIT.app.services.utils.Utils;
@@ -89,15 +89,53 @@ public class LoginRepository {
 
 				if (rowsInserted > 0) {
 					LOGGER.info("A new user device info was inserted successfully!");
-					return Constants.USER_CREATED;
+					return Constants.USER_DEVICE_INFO_CREATED;
 				} else {
-					return Constants.ERROR_USER_CREATION;
+					return Constants.ERROR_USER_DEVICE_INFO_CREATION;
 				}
 			} finally {
 
 			}
 		}
-		return Constants.ERROR_USER_CREATION;
+		return Constants.ERROR_USER_DEVICE_INFO_CREATION;
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public String updateUserDeviceInfo(UserDeviceInfo userDeviceInfo) throws ClassNotFoundException, SQLException {
+		if (userDeviceInfo != null && userDeviceInfo.getDeviceId() != null) {
+			try {
+				LOGGER.info("In addUserDeviceInfo");
+				String sql = "UPDATE users_device_info SET device_id = ?, firebase_id = ?, gcm_id = ?, vision_id = ? WHERE uid = ?";
+				int rowsUpdated = jdbcTemplate.update(sql, userDeviceInfo.getDeviceId(), userDeviceInfo.getFirebaseId(),
+						userDeviceInfo.getGcmId(), userDeviceInfo.getVisionId(), userDeviceInfo.getUid());
+
+				if (rowsUpdated > 0) {
+					LOGGER.info("A new user device info was inserted successfully!");
+					return Constants.USER_DEVICE_INFO_CREATED;
+				} else {
+					return Constants.ERROR_USER_DEVICE_INFO_CREATION;
+				}
+			} finally {
+
+			}
+		}
+		return Constants.ERROR_USER_DEVICE_INFO_CREATION;
+	}
+	
+	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
+	public List<UserDeviceInfo> getUserDeviceInfo(String uid) throws ClassNotFoundException, SQLException {
+		if (uid != null) {
+			try {
+				LOGGER.info("In getUserDeviceInfo " + uid);
+				String sql = "SELECT * FROM users_device_info WHERE uid = ?";
+				List<UserDeviceInfo> usersDeviceInfo = jdbcTemplate.query(sql, new Object[] { uid }, new UserDeviceInfoMapper());
+				LOGGER.info("The user returned " + usersDeviceInfo != null ? usersDeviceInfo.toString() : null);
+				return usersDeviceInfo;
+			} finally {
+
+			}
+		}
+		return null;
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)

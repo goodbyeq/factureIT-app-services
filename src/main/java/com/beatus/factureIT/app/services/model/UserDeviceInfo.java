@@ -2,12 +2,19 @@ package main.java.com.beatus.factureIT.app.services.model;
 
 public class UserDeviceInfo {
 	
+	private String userDeviceInfoId;
 	private String deviceId;
 	private String firebaseId;
 	private String gcmId;
 	private String visionId;
 	private String uid;
 	
+	public String getUserDeviceInfoId() {
+		return userDeviceInfoId;
+	}
+	public void setUserDeviceInfoId(String userDeviceInfoId) {
+		this.userDeviceInfoId = userDeviceInfoId;
+	}
 	public String getDeviceId() {
 		return deviceId;
 	}
