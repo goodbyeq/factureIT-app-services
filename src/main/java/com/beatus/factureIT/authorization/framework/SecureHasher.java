@@ -8,7 +8,7 @@ import java.util.Base64;
 
 import com.beatus.factureIT.authorization.api.SecureHashCheckCommand;
 import com.beatus.factureIT.authorization.api.SecureHashCommand;
-import com.beatus.factureIT.exception.JceSecureHashException;
+import com.beatus.factureIT.app.services.exception.JceSecureHashException;
 
 /**
  * This class provides an easy to use wrapper around JCE, the JavaTM

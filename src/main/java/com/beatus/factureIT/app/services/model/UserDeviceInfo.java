@@ -1,4 +1,4 @@
-package main.java.com.beatus.factureIT.app.services.model;
+package com.beatus.factureIT.app.services.model;
 
 public class UserDeviceInfo {
 	

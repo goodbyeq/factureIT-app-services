@@ -28,8 +28,8 @@ import org.springframework.util.CollectionUtils;
 import com.beatus.factureIT.authoriation.api.impl.JWTTokenValidator;
 import com.beatus.factureIT.authorization.api.SecretService;
 import com.beatus.factureIT.authorization.api.TokenValidator;
-import com.beatus.factureIT.exception.GBQTokenException;
-import com.beatus.factureIT.exception.JwtTokenMissingException;
+import com.beatus.factureIT.app.services.exception.FactureITTokenException;
+import com.beatus.factureIT.app.services.exception.JwtTokenMissingException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
