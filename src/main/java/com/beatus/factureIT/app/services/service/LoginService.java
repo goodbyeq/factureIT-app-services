@@ -2,9 +2,8 @@ package com.beatus.factureIT.app.services.service;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -17,9 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.beatus.factureIT.app.services.controller.LoginController;
 import com.beatus.factureIT.app.services.encryption.EncryptionFactory;
 import com.beatus.factureIT.app.services.encryption.HashFactory;
 import com.beatus.factureIT.app.services.encryption.HashFactory.Hash;
@@ -30,8 +30,8 @@ import com.beatus.factureIT.app.services.repository.LoginRepository;
 import com.beatus.factureIT.app.services.utils.Constants;
 import com.beatus.factureIT.app.services.utils.CookieManager;
 import com.beatus.factureIT.app.services.utils.Utils;
+import com.beatus.factureIT.authoriation.api.impl.UserSecurityDetails;
 import com.beatus.factureIT.authorization.api.FactureITAuthorities;
-import com.beatus.factureIT.authorization.api.FactureITUserRoles;
 import com.beatus.factureIT.authorization.api.FactureITUserType;
 
 @Component("loginService")
@@ -82,11 +82,11 @@ public class LoginService {
 		}
 		return loginResp;
 	}
-	
+
 	public User getUserByUsername(String username) {
-		User user= null;
+		User user = null;
 		try {
-			user = loginRepository.getUserByUsername(user.getUsername());
+			user = loginRepository.getUserByUsername(username);
 		} catch (ClassNotFoundException | SQLException e) {
 			LOGGER.info("Error getting user {}", username);
 			return null;
@@ -94,7 +94,7 @@ public class LoginService {
 		return user;
 	}
 
-	public UserCreatedResponse addUserProfile(User user){
+	public UserCreatedResponse addUserProfile(User user) {
 		String userCreatedResp;
 		UserCreatedResponse resp = new UserCreatedResponse();
 		try {
@@ -165,12 +165,12 @@ public class LoginService {
 	public void logoutUser(HttpServletRequest request, HttpServletResponse response) {
 		cookieManager.addCookie(response, COOKIE_NAME, "", false, true);
 	}
-	
-	public LinkedHashSet<String> getUserRoles(final String userType) {
+
+	private LinkedHashSet<String> getUserRoles(final List<String> userType) {
 		LinkedHashSet<String> userRoles = new LinkedHashSet<String>();
 		if (userType.contains(FactureITUserType.CUSTOMER.getValue())) {
 			userRoles.add(Constants.CUSTOMER_TYPE);
-		} 
+		}
 		if (userType.contains(FactureITUserType.DISTRIBUTOR.getValue())) {
 			userRoles.add(Constants.DISTRIBUTOR_TYPE);
 		}
@@ -187,14 +187,14 @@ public class LoginService {
 
 	}
 
-	public Set<SimpleGrantedAuthority> getUserAuthorities(final String userType) {
+	private Set<SimpleGrantedAuthority> getUserAuthorities(final List<String> userType) {
 		final Set<SimpleGrantedAuthority> authorities = new LinkedHashSet<SimpleGrantedAuthority>();
 		if (userType.contains(FactureITUserType.CUSTOMER.getValue())) {
 			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_CUSTOMER.getValue()));
 			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.WRITE_CUSTOMER.getValue()));
 			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_RETAILER.getValue()));
 			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_USER.getValue()));
-		} 
+		}
 		if (userType.contains(FactureITUserType.DISTRIBUTOR.getValue())) {
 			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_DISTRIBUTOR.getValue()));
 			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_MANUFACTURER.getValue()));
@@ -230,6 +230,38 @@ public class LoginService {
 		}
 		return authorities;
 
+	}
+
+	private UserSecurityDetails getUserDetailsVO(final User vo) {
+		UserSecurityDetails ud = null;
+		if (vo != null) {
+			String userName = vo.getFirstname() + "  " + vo.getLastname();
+			ud = new UserSecurityDetails(vo.getUid(), userName, vo.getPassword(), getUserRoles(vo.getUserType()),
+					getUserAuthorities(vo.getUserType()), true, true, true, true,
+					UserSecurityDetails.AUTHENTICATION_TYPE_OAUTH2);
+		}
+		return ud;
+	}
+
+	public UserDetails loadUserByUsername(final String userName) throws UsernameNotFoundException {
+		if (StringUtils.isBlank(userName)) {
+			throw new UsernameNotFoundException("User name not found");
+		}
+		User userVO = null;
+		UserDetails userDetails = null;
+		try {
+			LOGGER.debug("Profile retreived by username");
+			userVO = getUserByUsername(userName);
+			if(userVO == null) {
+				throw new UsernameNotFoundException("Exception while accessing user details");
+			}
+			userDetails = this.getUserDetailsVO(userVO);
+		} catch (Exception e) {
+			LOGGER.error("Exception while loading user", e);
+			throw new UsernameNotFoundException("Exception while accessing user details");
+		}
+		LOGGER.debug("User details returned");
+		return userDetails;
 	}
 
 }

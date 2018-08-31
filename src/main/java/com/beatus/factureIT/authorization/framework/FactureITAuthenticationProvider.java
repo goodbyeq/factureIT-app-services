@@ -1,5 +1,7 @@
 package com.beatus.factureIT.authorization.framework;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,18 +11,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.beatus.factureIT.app.services.service.LoginService;
+
 @Service("authenticationProvider")
-public class GBQAuthenticationProvider implements AuthenticationProvider {
+public class FactureITAuthenticationProvider implements AuthenticationProvider {
 
 	
-	private UserDetailsService userDetailsService;
-
-	public UserDetailsService getUserDetailsService() {
-		return userDetailsService;
+	@Resource(name = "loginService")
+	private LoginService loginService;
+	
+	public LoginService getLoginService() {
+		return loginService;
 	}
 
-	public void setUserDetailsService(UserDetailsService userDetailsService) {
-		this.userDetailsService = userDetailsService;
+	public void setLoginService(LoginService loginService) {
+		this.loginService = loginService;
 	}
 
 	@Override
@@ -28,7 +33,7 @@ public class GBQAuthenticationProvider implements AuthenticationProvider {
 		Authentication authenticatedToken = null;
 		String principal = (String) authentication.getPrincipal();
 		String credentials = (String) authentication.getCredentials();
-		UserDetails user = getUserDetailsService().loadUserByUsername((String) authentication.getPrincipal());
+		UserDetails user = getLoginService().loadUserByUsername((String) authentication.getPrincipal());
 		authenticatedToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
 				user.getAuthorities());
 		return authenticatedToken;

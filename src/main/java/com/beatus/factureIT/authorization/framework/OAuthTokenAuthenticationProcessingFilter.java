@@ -46,7 +46,7 @@ public class OAuthTokenAuthenticationProcessingFilter extends OAuth2Authenticati
 	private Map<String, String> filterProcessPathExclusionMap;
 
 	@Autowired
-	private GBQAuthenticationProvider authenticationProvider;
+	private FactureITAuthenticationProvider authenticationProvider;
 
 	@Autowired(required = true)
 	private SecretService secretService;
@@ -69,14 +69,14 @@ public class OAuthTokenAuthenticationProcessingFilter extends OAuth2Authenticati
 		this.filterProcessPathExclusionMap = filterProcessPathExclusionMap;
 	}
 
-	public GBQAuthenticationProvider getAuthenticationProvider() {
+	public FactureITAuthenticationProvider getAuthenticationProvider() {
 		if (null == authenticationProvider) {
-			authenticationProvider = BeanUtil.getBean(GBQAuthenticationProvider.class);
+			authenticationProvider = BeanUtil.getBean(FactureITAuthenticationProvider.class);
 		}
 		return authenticationProvider;
 	}
 
-	public void setAuthenticationProvider(GBQAuthenticationProvider authenticationProvider) {
+	public void setAuthenticationProvider(FactureITAuthenticationProvider authenticationProvider) {
 		this.authenticationProvider = authenticationProvider;
 	}
 
