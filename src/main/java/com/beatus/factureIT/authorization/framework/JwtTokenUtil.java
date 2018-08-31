@@ -5,13 +5,12 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.authorization.api.SecretService;
-import com.goodbyeq.user.bo.GBQUserVO;
 
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
@@ -49,14 +48,14 @@ public class JwtTokenUtil {
 	 * @param roles
 	 * @return
 	 */
-	public String createAccessJwtToken(final GBQUserVO gbqUser) {
-		if (!StringUtils.hasText(gbqUser.getUserID()))
+	public String createAccessJwtToken(final User gbqUser) {
+		if (!StringUtils.hasText(gbqUser.getUsername()))
 			throw new IllegalArgumentException("Cannot create JWT Token without username");
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
 		String primaryID = null;
 		//if (BooleanUtils.toBoolean(gbqUser.isEmailVerified())) {
-		primaryID = gbqUser.getEmailID();
+		primaryID = gbqUser.getUsername();
 		/*
 		 * } else { if (BooleanUtils.toBoolean(gbqUser.isPhoneVerified())) {
 		 * primaryID = gbqUser.getPhoneNumber(); } else { throw new

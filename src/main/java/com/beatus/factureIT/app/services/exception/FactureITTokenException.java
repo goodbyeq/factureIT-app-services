@@ -1,13 +1,13 @@
 package com.beatus.factureIT.app.services.exception;
 
-public class GBQTokenException extends Exception {
+public class FactureITTokenException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates a new GBQTokenException.
 	 */
-	public GBQTokenException() {
+	public FactureITTokenException() {
 		super();
 	}
 
@@ -18,7 +18,7 @@ public class GBQTokenException extends Exception {
 	 * @param message
 	 *            String representation of the error message.
 	 */
-	public GBQTokenException(final String message) {
+	public FactureITTokenException(final String message) {
 		super(message);
 	}
 
@@ -29,7 +29,7 @@ public class GBQTokenException extends Exception {
 	 * @param cause
 	 *            The original Throwable object, if one was thrown.
 	 */
-	public GBQTokenException(final Throwable cause) {
+	public FactureITTokenException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -42,7 +42,7 @@ public class GBQTokenException extends Exception {
 	 * @param cause
 	 *            The original Throwable object, if one was thrown.
 	 */
-	public GBQTokenException(final String message, final Throwable cause) {
+	public FactureITTokenException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 

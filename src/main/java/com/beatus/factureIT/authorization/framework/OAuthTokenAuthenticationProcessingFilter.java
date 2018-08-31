@@ -151,7 +151,7 @@ public class OAuthTokenAuthenticationProcessingFilter extends OAuth2Authenticati
 					Authentication auth = attemptAuthentication(request, response);
 					SecurityContextHolder.getContext().setAuthentication(auth);
 				}
-			} catch (JwtTokenMissingException | GBQTokenException | AuthenticationException ex) {
+			} catch (JwtTokenMissingException | FactureITTokenException | AuthenticationException ex) {
 				// authentication failed, log the exception and continue processing the request
 				throw new ServletException(ex);
 			}

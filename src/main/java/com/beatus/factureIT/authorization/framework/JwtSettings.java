@@ -10,16 +10,16 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Configuration
 public class JwtSettings {
 
-	@Value("#{new Integer('${gbq.security.jwt.tokenExpirationTime}')}")
+	@Value("#{new Integer('${factureIT.security.jwt.tokenExpirationTime}')}")
 	private Integer tokenExpirationTime;
 
-	@Value("${gbq.security.jwt.tokenIssuer}")
+	@Value("${factureIT.security.jwt.tokenIssuer}")
 	private String tokenIssuer;
 
-	@Value("${gbq.security.jwt.tokenSigningKey}")
+	@Value("${factureIT.security.jwt.tokenSigningKey}")
 	private String tokenSigningKey;
 
-	@Value("${gbq.security.jwt.tokenSigningAlgorithm}")
+	@Value("${factureIT.security.jwt.tokenSigningAlgorithm}")
 	private String tokenSigningAlgorithm;
 
 	public Integer getTokenExpirationTime() {

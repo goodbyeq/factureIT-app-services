@@ -1,6 +1,6 @@
 package com.beatus.factureIT.authorization.api;
 
-import com.beatus.factureIT.exception.JceSecureHashException;
+import com.beatus.factureIT.app.services.exception.JceSecureHashException;
 
 public interface SecureHashCommand {
 

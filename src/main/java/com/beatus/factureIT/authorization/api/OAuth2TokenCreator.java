@@ -1,8 +1,8 @@
 package com.beatus.factureIT.authorization.api;
 
-import com.beatus.factureIT.authorization.bo.GoodByeQToken;
+import com.beatus.factureIT.authorization.bo.FactureITToken;
 
 public interface OAuth2TokenCreator {
 
-	public GoodByeQToken generateNewToken(final String jwtToken) throws Exception;
+	public FactureITToken generateNewToken(final String jwtToken) throws Exception;
 }

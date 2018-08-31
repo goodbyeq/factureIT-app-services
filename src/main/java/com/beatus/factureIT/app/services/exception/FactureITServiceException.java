@@ -1,13 +1,13 @@
 package com.beatus.factureIT.app.services.exception;
 
-public class GBQUserException extends Exception {
+public class FactureITServiceException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates a new GBQServiceException.
 	 */
-	public GBQUserException() {
+	public FactureITServiceException() {
 		super();
 	}
 
@@ -18,7 +18,7 @@ public class GBQUserException extends Exception {
 	 * @param message
 	 *            String representation of the error message.
 	 */
-	public GBQUserException(final String message) {
+	public FactureITServiceException(final String message) {
 		super(message);
 	}
 
@@ -29,7 +29,7 @@ public class GBQUserException extends Exception {
 	 * @param cause
 	 *            The original Throwable object, if one was thrown.
 	 */
-	public GBQUserException(final Throwable cause) {
+	public FactureITServiceException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -42,7 +42,7 @@ public class GBQUserException extends Exception {
 	 * @param cause
 	 *            The original Throwable object, if one was thrown.
 	 */
-	public GBQUserException(final String message, final Throwable cause) {
+	public FactureITServiceException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 

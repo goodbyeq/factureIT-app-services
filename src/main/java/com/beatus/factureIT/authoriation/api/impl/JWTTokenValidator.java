@@ -3,18 +3,20 @@ package com.beatus.factureIT.authoriation.api.impl;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.beatus.factureIT.app.services.exception.FactureITTokenException;
+import com.beatus.factureIT.app.services.exception.FactureITUserException;
+import com.beatus.factureIT.app.services.exception.JwtTokenMissingException;
+import com.beatus.factureIT.app.services.model.User;
+import com.beatus.factureIT.app.services.service.LoginService;
 import com.beatus.factureIT.authorization.api.SecretService;
 import com.beatus.factureIT.authorization.api.TokenValidator;
 import com.beatus.factureIT.authorization.framework.JwtSettings;
-import com.beatus.factureIT.exception.GBQTokenException;
-import com.beatus.factureIT.exception.GBQUserException;
-import com.beatus.factureIT.exception.JwtTokenMissingException;
-import com.goodbyeq.user.db.bo.UserVO;
-import com.goodbyeq.user.service.api.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -30,8 +32,8 @@ public class JWTTokenValidator implements TokenValidator {
 	@Autowired(required = true)
 	private SecretService secretService;
 
-	@Autowired(required = true)
-	private UserService userService;
+	@Resource(name = "loginService")
+	private LoginService loginService;
 
 	public JwtSettings getJwtSettings() {
 		return jwtSettings;
@@ -49,16 +51,16 @@ public class JWTTokenValidator implements TokenValidator {
 		this.secretService = secretService;
 	}
 
-	public UserService getUserService() {
-		return userService;
+	public LoginService getLoginService() {
+		return loginService;
 	}
 
-	public void setUserService(UserService userService) {
-		this.userService = userService;
+	public void setLoginService(LoginService loginService) {
+		this.loginService = loginService;
 	}
 
 	@Override
-	public Boolean validateToken(String requestURI, String oAuth2TokenString) throws GBQTokenException {
+	public Boolean validateToken(String requestURI, String oAuth2TokenString) throws FactureITTokenException {
 		Boolean isTokenValid = false;
 		String header = oAuth2TokenString;
 		try {
@@ -74,7 +76,7 @@ public class JWTTokenValidator implements TokenValidator {
 
 			// Validate issuer
 			if (!getJwtSettings().getTokenIssuer().equals(claims.getBody().getIssuer())) {
-				throw new GBQTokenException("Token Issuer did not match");
+				throw new FactureITTokenException("Token Issuer did not match");
 			}
 
 			// Validate expiration time
@@ -82,33 +84,28 @@ public class JWTTokenValidator implements TokenValidator {
 			long nowMillis = System.currentTimeMillis();
 			Timestamp currentTimestamp = new Timestamp(nowMillis);
 			if (currentTimestamp.after(expirationDate)) {
-				throw new GBQTokenException("Token expired");
+				throw new FactureITTokenException("Token expired");
 			}
 
 			// Validate user exists in system
 			isTokenValid = this.validatePrincipalUser(claims.getBody().getSubject());
 
 		} catch (final Exception e) {
-			throw new GBQTokenException("Exception while validating token", e);
+			throw new FactureITTokenException("Exception while validating token", e);
 		}
 		return isTokenValid;
 	}
 
 	private boolean validatePrincipalUser(final String principalID)
-			throws JwtTokenMissingException, GBQTokenException, GBQUserException {
-		String regex = "[0-9]+";
-		UserVO vo = null;
+			throws JwtTokenMissingException, FactureITTokenException, FactureITUserException {
+		User vo = null;
 		if (!StringUtils.hasText(principalID)) {
-			throw new GBQTokenException("No JWT subject found in request headers");
+			throw new FactureITTokenException("No JWT subject found in request headers");
 		}
-		if (principalID.matches(regex)) {
-			vo = getUserService().getUserVOByPhoneNumber(principalID);
-		} else {
-			vo = getUserService().getUserVOByEmailID(principalID);
-		}
+		vo = getLoginService().getUserByUsername(principalID);
 
-		if (null == vo) {
-			throw new GBQTokenException("User not found");
+		if (vo == null) {
+			throw new FactureITTokenException("User not found");
 		}
 		return true;
 	}

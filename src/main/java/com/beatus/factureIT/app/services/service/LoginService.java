@@ -82,6 +82,17 @@ public class LoginService {
 		}
 		return loginResp;
 	}
+	
+	public User getUserByUsername(String username) {
+		User user= null;
+		try {
+			user = loginRepository.getUserByUsername(user.getUsername());
+		} catch (ClassNotFoundException | SQLException e) {
+			LOGGER.info("Error getting user {}", username);
+			return null;
+		}
+		return user;
+	}
 
 	public UserCreatedResponse addUserProfile(User user){
 		String userCreatedResp;
@@ -155,7 +166,7 @@ public class LoginService {
 		cookieManager.addCookie(response, COOKIE_NAME, "", false, true);
 	}
 	
-	private LinkedHashSet<String> getUserRoles(final String userType) {
+	public LinkedHashSet<String> getUserRoles(final String userType) {
 		LinkedHashSet<String> userRoles = new LinkedHashSet<String>();
 		if (userType.contains(FactureITUserType.CUSTOMER.getValue())) {
 			userRoles.add(Constants.CUSTOMER_TYPE);
@@ -176,7 +187,7 @@ public class LoginService {
 
 	}
 
-	private Set<SimpleGrantedAuthority> getUserAuthorities(final String userType) {
+	public Set<SimpleGrantedAuthority> getUserAuthorities(final String userType) {
 		final Set<SimpleGrantedAuthority> authorities = new LinkedHashSet<SimpleGrantedAuthority>();
 		if (userType.contains(FactureITUserType.CUSTOMER.getValue())) {
 			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_CUSTOMER.getValue()));

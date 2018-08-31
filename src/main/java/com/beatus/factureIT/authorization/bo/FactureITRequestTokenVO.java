@@ -2,7 +2,7 @@ package com.beatus.factureIT.authorization.bo;
 
 import java.io.Serializable;
 
-public class GBQRequestTokenVO implements Serializable {
+public class FactureITRequestTokenVO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

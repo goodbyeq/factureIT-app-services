@@ -6,7 +6,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class GoodByeQToken implements Serializable {
+public class FactureITToken implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -22,10 +22,10 @@ public class GoodByeQToken implements Serializable {
 	@JsonProperty("token_type")
 	private String tokenType;
 
-	public GoodByeQToken() {
+	public FactureITToken() {
 	}
 
-	public GoodByeQToken(String accessToken, Integer expiresIn, String tokenType) {
+	public FactureITToken(String accessToken, Integer expiresIn, String tokenType) {
 		this.accessToken = accessToken;
 		this.expiresIn = expiresIn;
 		this.tokenType = tokenType;
