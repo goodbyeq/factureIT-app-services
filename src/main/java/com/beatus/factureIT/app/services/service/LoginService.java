@@ -3,7 +3,9 @@ package com.beatus.factureIT.app.services.service;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,6 +16,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.beatus.factureIT.app.services.controller.LoginController;
@@ -27,6 +30,9 @@ import com.beatus.factureIT.app.services.repository.LoginRepository;
 import com.beatus.factureIT.app.services.utils.Constants;
 import com.beatus.factureIT.app.services.utils.CookieManager;
 import com.beatus.factureIT.app.services.utils.Utils;
+import com.beatus.factureIT.authorization.api.FactureITAuthorities;
+import com.beatus.factureIT.authorization.api.FactureITUserRoles;
+import com.beatus.factureIT.authorization.api.FactureITUserType;
 
 @Component("loginService")
 public class LoginService {
@@ -147,6 +153,72 @@ public class LoginService {
 
 	public void logoutUser(HttpServletRequest request, HttpServletResponse response) {
 		cookieManager.addCookie(response, COOKIE_NAME, "", false, true);
+	}
+	
+	private LinkedHashSet<String> getUserRoles(final String userType) {
+		LinkedHashSet<String> userRoles = new LinkedHashSet<String>();
+		if (userType.contains(FactureITUserType.CUSTOMER.getValue())) {
+			userRoles.add(Constants.CUSTOMER_TYPE);
+		} 
+		if (userType.contains(FactureITUserType.DISTRIBUTOR.getValue())) {
+			userRoles.add(Constants.DISTRIBUTOR_TYPE);
+		}
+		if (userType.contains(FactureITUserType.RETAILER.getValue())) {
+			userRoles.add(Constants.RETAILER_TYPE);
+		}
+		if (userType.contains(FactureITUserType.MANUFACTURER.getValue())) {
+			userRoles.add(Constants.MANUFACTURER_TYPE);
+		}
+		if (userType.contains(FactureITUserType.COLLECTION_AGENT.getValue())) {
+			userRoles.add(Constants.COLLECTION_AGENT_TYPE);
+		}
+		return userRoles;
+
+	}
+
+	private Set<SimpleGrantedAuthority> getUserAuthorities(final String userType) {
+		final Set<SimpleGrantedAuthority> authorities = new LinkedHashSet<SimpleGrantedAuthority>();
+		if (userType.contains(FactureITUserType.CUSTOMER.getValue())) {
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_CUSTOMER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.WRITE_CUSTOMER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_RETAILER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_USER.getValue()));
+		} 
+		if (userType.contains(FactureITUserType.DISTRIBUTOR.getValue())) {
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_DISTRIBUTOR.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_MANUFACTURER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.WRITE_DISTRIBUTOR.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_RETAILER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.ADD_COLLECTION_AGENT_ROUTE.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.ADD_OR_UPDATE_COLLECTION_AGENT.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_COLLECTION_AGENT_ROUTE.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_USER.getValue()));
+		}
+		if (userType.contains(FactureITUserType.RETAILER.getValue())) {
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_DISTRIBUTOR.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_RETAILER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.WRITE_RETAILER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.ADD_COLLECTION_AGENT_ROUTE.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.ADD_OR_UPDATE_COLLECTION_AGENT.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_COLLECTION_AGENT_ROUTE.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_USER.getValue()));
+		}
+		if (userType.contains(FactureITUserType.MANUFACTURER.getValue())) {
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_DISTRIBUTOR.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_MANUFACTURER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.WRITE_MANUFACTURER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.READ_RETAILER.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.ADD_COLLECTION_AGENT_ROUTE.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.ADD_OR_UPDATE_COLLECTION_AGENT.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_COLLECTION_AGENT_ROUTE.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_USER.getValue()));
+		}
+		if (userType.contains(FactureITUserType.COLLECTION_AGENT.getValue())) {
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_COLLECTION_AGENT_ROUTE.getValue()));
+			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_USER.getValue()));
+		}
+		return authorities;
+
 	}
 
 }
