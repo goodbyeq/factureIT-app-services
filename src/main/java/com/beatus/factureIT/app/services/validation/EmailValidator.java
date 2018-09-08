@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.beatus.goodbyeq.email.model.MailVO;
-import com.beatus.goodbyeq.email.validation.exception.GoodByeQClientValidationException;
+import com.beatus.factureIT.app.services.exception.FactureITClientValidationException;
+import com.beatus.factureIT.app.services.model.MailVO;
 @Component("emailValidator")
 public class EmailValidator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailValidator.class);

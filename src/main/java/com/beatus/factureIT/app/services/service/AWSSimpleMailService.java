@@ -40,7 +40,7 @@ public class AWSSimpleMailService {
 
 	public void sendEmailThroughAWSSES(String to, String subject, String textBody, String htmlBody) throws IOException {
 
-		try {
+		/*try {
 
 			SendEmailRequest request = new SendEmailRequest().withDestination(new Destination().withToAddresses(TO))
 					.withMessage(new Message()
@@ -55,6 +55,6 @@ public class AWSSimpleMailService {
 			System.out.println("Email sent!");
 		} catch (Exception ex) {
 			System.out.println("The email was not sent. Error message: " + ex.getMessage());
-		}
+		}*/
 	}
 }

@@ -86,14 +86,14 @@ public class SMSService {
 	public String sendSms(HttpServletRequest request, HttpServletResponse response, SmsVO smsVO)
 			throws FactureITServiceException {
 
-		if (smsVO == null || smsVO.getUid() == null) {
+		if (smsVO == null || smsVO.getUsername() == null) {
 			throw new FactureITServiceException("Sms cant be sent.");
 		}
 		try {
-			
+			//TODO - send sms
 			addSmsInfo(request, response, smsVO);
 		} catch (Exception e) {
-			throw new FactureITServiceException("Error seding esms through AWS " + e.getMessage());
+			throw new FactureITServiceException("Error seding sms  " + e.getMessage());
 		}		
 		return Constants.SUCCESS;
 	}

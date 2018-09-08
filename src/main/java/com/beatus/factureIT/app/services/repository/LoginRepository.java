@@ -233,4 +233,24 @@ public class LoginRepository {
 			this.collectionAgentId = collectionAgentId;
 		}
 	}
+
+	public boolean updateUserVerificationStatus(String username, String status) {
+		if (username != null) {
+			try {
+				LOGGER.info("In updateUserVerificationStatus");
+				String sql = "UPDATE users SET verified = ? WHERE username = ?";
+				int rowsUpdated = jdbcTemplate.update(sql, status, username);
+
+				if (rowsUpdated > 0) {
+					LOGGER.info("A user verification Status was updated successfully!");
+					return true;
+				} else {
+					return false;
+				}
+			} finally {
+
+			}
+		}
+		return false;
+	}
 }

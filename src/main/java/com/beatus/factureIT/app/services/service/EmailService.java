@@ -89,6 +89,7 @@ public class EmailService {
 			throw new FactureITServiceException("Mail cant be sent.");
 		}
 		try {
+			//TODO - send email
 			/*awsSimpleMailService.sendEmailThroughAWSSES(mailVO.getToAddress(), mailVO.getSubject(), mailVO.getBody(),
 					mailVO.getHtmlBody());*/
 			addEmail(request, response, mailVO);

@@ -35,7 +35,7 @@ public class EmailRepository {
 	public String addEmailWithoutAttachments(MailVO mailVO) throws ClassNotFoundException, SQLException {
 		LOGGER.info("In addEmailWithoutAttachments " + mailVO.getMailId());
 		try {
-			String sql = "INSERT INTO users_email (users_email_id, from_address, to_address, subject, body, send_code, ccAddress, bccAddress, html_body, username, mail_type) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO users_email (users_email_id, from_address, to_address, subject, body, send_code, cc_address, bcc_address, html_body, username, mail_type) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
 			int rowsInserted = jdbcTemplate.update(sql, mailVO.getMailId(), mailVO.getFromAddress(),
 					mailVO.getToAddress(), mailVO.getSubject(), mailVO.getBody(), mailVO.getSendCode(), mailVO.getCcAddress() != null ? mailVO.getCcAddress().toString() : null,

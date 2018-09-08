@@ -49,7 +49,7 @@ public class LoginController {
 	}
 
 	public static JSendResponse<String> jsend(String response) {
-		if (StringUtils.isBlank(response) || Constants.ERROR_LOGIN.equalsIgnoreCase(response)) {
+		if (StringUtils.isBlank(response) || Constants.ERROR_LOGIN.equalsIgnoreCase(response) || Constants.FAILURE.equalsIgnoreCase(response)) {
 			return new JSendResponse<String>(Constants.FAILURE, response);
 		} else {
 			return new JSendResponse<String>(Constants.SUCCESS, response);

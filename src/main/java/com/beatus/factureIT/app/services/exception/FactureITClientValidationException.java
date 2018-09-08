@@ -6,9 +6,6 @@ import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import com.beatus.goodbyeq.email.exception.ExceptionHandlerUtils;
-import com.beatus.goodbyeq.email.exception.ResponseEntityException;
-
 /**
  * @author vakey15
  * This is a exception that is thrown when there is a bad data in the request parameters

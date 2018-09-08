@@ -347,32 +347,43 @@ public class LoginService {
 		String sendCode = Utils.generateSendCode();
 		String id = Utils.generateRandomKey(50);
 		String messageBody = sendCode + Constants.VERIFICATION_CODE_BODY;
-		if(Constants.EMAIL_TYPE.equals(userSendCodeType)) {
-			MailVO mailVO = new MailVO();
-			mailVO.setToAddress(username);
-			mailVO.setSubject(Constants.MAIL_SUBJECT);
-			mailVO.setUsername(username);
-			mailVO.setSendCode(sendCode);
-			mailVO.setMailId(id);
-			mailVO.setBody(messageBody);
-			return emailService.sendEmail(request, response, mailVO);
-		}else if(Constants.SMS_TYPE.equals(userSendCodeType)) {
-			SmsVO smsVO = new SmsVO();
-			smsVO.setUsername(username);
-			smsVO.setSendCode(sendCode);
-			smsVO.setDestPhone(username);
-			smsVO.setSmsId(id);
-			smsVO.setMessage(messageBody);
-			return smsService.sendSms(request, response, smsVO);
+		User user = getUserByUsername(username);
+		if(user != null && user.getUsername().equals(username)) {
+			if(Constants.EMAIL_TYPE.equals(userSendCodeType)) {
+				MailVO mailVO = new MailVO();
+				mailVO.setToAddress(username);
+				mailVO.setSubject(Constants.MAIL_SUBJECT);
+				mailVO.setUsername(username);
+				mailVO.setSendCode(sendCode);
+				mailVO.setMailId(id);
+				mailVO.setBody(messageBody);
+				mailVO.setMailType(Constants.EMAIL_VERIFICATION_TYPE);
+				return emailService.sendEmail(request, response, mailVO);
+			}else if(Constants.SMS_TYPE.equals(userSendCodeType)) {
+				SmsVO smsVO = new SmsVO();
+				smsVO.setUsername(username);
+				smsVO.setSendCode(sendCode);
+				smsVO.setDestPhone(username);
+				smsVO.setSmsId(id);
+				smsVO.setMessage(messageBody);
+				smsVO.setSmsType(Constants.SMS_VERIFICATION_TYPE);
+				return smsService.sendSms(request, response, smsVO);
+			}
 		}
 		return Constants.FAILURE;
 	}
 
 	public String verifySendCode(String username, String code, String userSendCodeType) throws FactureITServiceException {
+		String response = null;
 		if(Constants.EMAIL_TYPE.equals(userSendCodeType)) {
-			return emailService.verifySendCode(code, username);
+			response = emailService.verifySendCode(code, username);
 		}else if(Constants.SMS_TYPE.equals(userSendCodeType)) {
-			return smsService.verifySendCode(code, username);
+			response = smsService.verifySendCode(code, username);
+		}
+		if(response != null && response.equals(Constants.SUCCESS)) {
+			boolean isUpdated = loginRepository.updateUserVerificationStatus(username, Constants.YES);
+			if(isUpdated)
+				return Constants.SUCCESS;
 		}
 		return Constants.FAILURE;
 	}
