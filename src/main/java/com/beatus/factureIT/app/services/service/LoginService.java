@@ -15,6 +15,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,6 +25,9 @@ import com.beatus.factureIT.app.services.encryption.EncryptionFactory;
 import com.beatus.factureIT.app.services.encryption.HashFactory;
 import com.beatus.factureIT.app.services.encryption.HashFactory.Hash;
 import com.beatus.factureIT.app.services.encryption.KeyChainEntries;
+import com.beatus.factureIT.app.services.exception.FactureITServiceException;
+import com.beatus.factureIT.app.services.model.MailVO;
+import com.beatus.factureIT.app.services.model.SmsVO;
 import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.app.services.model.UserCreatedResponse;
 import com.beatus.factureIT.app.services.repository.LoginRepository;
@@ -33,6 +37,8 @@ import com.beatus.factureIT.app.services.utils.Utils;
 import com.beatus.factureIT.authoriation.api.impl.UserSecurityDetails;
 import com.beatus.factureIT.authorization.api.FactureITAuthorities;
 import com.beatus.factureIT.authorization.api.FactureITUserType;
+import com.beatus.factureIT.authorization.api.OAuth2TokenCreator;
+import com.beatus.factureIT.authorization.framework.JwtTokenUtil;
 
 @Component("loginService")
 public class LoginService {
@@ -41,12 +47,40 @@ public class LoginService {
 
 	@Resource(name = "loginRepository")
 	LoginRepository loginRepository;
+	
+	@Resource(name = "smsService")
+	SMSService smsService;
+	
+	@Resource(name = "emailService")
+	EmailService emailService;
 
 	@Resource(name = "keyChainEntries")
 	private KeyChainEntries keyChainEntries;
 
 	@Resource(name = "cookieManager")
 	private CookieManager cookieManager;
+	
+	@Autowired(required = true)
+	private JwtTokenUtil tokenUtil;
+
+	@Autowired(required = true)
+	private OAuth2TokenCreator tokenCreator;
+
+	public JwtTokenUtil getTokenUtil() {
+		return tokenUtil;
+	}
+
+	public void setTokenUtil(JwtTokenUtil tokenUtil) {
+		this.tokenUtil = tokenUtil;
+	}
+
+	public OAuth2TokenCreator getTokenCreator() {
+		return tokenCreator;
+	}
+
+	public void setTokenCreator(OAuth2TokenCreator tokenCreator) {
+		this.tokenCreator = tokenCreator;
+	}
 
 	private static String COOKIE_NAME = "BL_SE";
 
@@ -152,6 +186,22 @@ public class LoginService {
 				user.setCompanyId(companyId);
 			}
 			userCreatedResp = loginRepository.addUser(user);
+			/*if (userCreatedResp.equals(Constants.USER_CREATED)) {
+				FactureITRequestTokenVO tokenVO= new FactureITRequestTokenVO();
+				tokenVO.setUserID(user.getUsername());
+				tokenVO.setUserIDType(Constants.USER_ID_TYPE_PHONE);
+				FactureITToken token = getSingleUseToken(tokenVO);
+				try {
+					httpServletResponse.addHeader("Set-Cookie",
+							token + "=" + BaseJsonHelper.getJsonString(token) + "; Path=/" + ";" + "Secure");
+					// httpServletResponse.sendRedirect("https://www.google.com");
+				} catch (final Exception e) {
+					LOGGER.error("Exception while redirecting user", e);
+					return jsend(null);
+				}
+				LOGGER.debug("addUser()::token " + token);
+				return jsend(token);
+			}*/
 			user.setPassword(null);
 			resp.setUser(user);
 		} catch (ClassNotFoundException | UnsupportedEncodingException | SQLException e) {
@@ -161,6 +211,37 @@ public class LoginService {
 		resp.setResponse(userCreatedResp);
 		return resp;
 	}
+	
+	/*@Override
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public String createFactureITUserToken(final FactureITRequestTokenVO userRequestToken) throws FactureITServiceException {
+		UserVO userVO = null;
+		try {
+			userVO = getUserByUsername(userRequestToken.getUserID());
+		} catch (final FactureITUserException e) {
+			LOGGER.error("Exception while fetching user detais", e);
+		}
+		FactureITUserVO gbqUserVO = new FactureITUserVO();
+		gbqUserVO = getFactureITUserVO(userVO);
+		String jwtToken = getTokenUtil().createAccessJwtToken(gbqUserVO);
+		return jwtToken;
+	}
+
+	@Override
+	public FactureITToken getSingleUseToken(final FactureITRequestTokenVO userRequestToken) throws FactureITUserException {
+		LOGGER.debug("Generating token for user");
+		String jwtToken = null;
+		FactureITToken token = null;
+		try {
+			jwtToken = this.createFactureITUserToken(userRequestToken);
+			token = getTokenCreator().generateNewToken(jwtToken);
+		} catch (final Exception e) {
+			LOGGER.error("Exception while generating token", e);
+			throw new FactureITUserException(e);
+		}
+		return token;
+	}*/
+
 
 	public void logoutUser(HttpServletRequest request, HttpServletResponse response) {
 		cookieManager.addCookie(response, COOKIE_NAME, "", false, true);
@@ -184,7 +265,6 @@ public class LoginService {
 			userRoles.add(Constants.COLLECTION_AGENT_TYPE);
 		}
 		return userRoles;
-
 	}
 
 	private Set<SimpleGrantedAuthority> getUserAuthorities(final List<String> userType) {
@@ -229,7 +309,6 @@ public class LoginService {
 			authorities.add(new SimpleGrantedAuthority(FactureITAuthorities.UPDATE_USER.getValue()));
 		}
 		return authorities;
-
 	}
 
 	private UserSecurityDetails getUserDetailsVO(final User vo) {
@@ -262,6 +341,40 @@ public class LoginService {
 		}
 		LOGGER.debug("User details returned");
 		return userDetails;
+	}
+
+	public String sendVerifyCode(HttpServletRequest request, HttpServletResponse response, String username, String userSendCodeType) throws FactureITServiceException {
+		String sendCode = Utils.generateSendCode();
+		String id = Utils.generateRandomKey(50);
+		String messageBody = sendCode + Constants.VERIFICATION_CODE_BODY;
+		if(Constants.EMAIL_TYPE.equals(userSendCodeType)) {
+			MailVO mailVO = new MailVO();
+			mailVO.setToAddress(username);
+			mailVO.setSubject(Constants.MAIL_SUBJECT);
+			mailVO.setUsername(username);
+			mailVO.setSendCode(sendCode);
+			mailVO.setMailId(id);
+			mailVO.setBody(messageBody);
+			return emailService.sendEmail(request, response, mailVO);
+		}else if(Constants.SMS_TYPE.equals(userSendCodeType)) {
+			SmsVO smsVO = new SmsVO();
+			smsVO.setUsername(username);
+			smsVO.setSendCode(sendCode);
+			smsVO.setDestPhone(username);
+			smsVO.setSmsId(id);
+			smsVO.setMessage(messageBody);
+			return smsService.sendSms(request, response, smsVO);
+		}
+		return Constants.FAILURE;
+	}
+
+	public String verifySendCode(String username, String code, String userSendCodeType) throws FactureITServiceException {
+		if(Constants.EMAIL_TYPE.equals(userSendCodeType)) {
+			return emailService.verifySendCode(code, username);
+		}else if(Constants.SMS_TYPE.equals(userSendCodeType)) {
+			return smsService.verifySendCode(code, username);
+		}
+		return Constants.FAILURE;
 	}
 
 }

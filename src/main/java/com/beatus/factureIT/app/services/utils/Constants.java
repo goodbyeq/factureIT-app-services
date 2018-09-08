@@ -134,17 +134,25 @@ public class Constants {
 	
     public static final String USER_ID_TYPE_EMAIL="EMAIL";
 	
-	public static final String USER_ID_TYPE_PHONE_NUMBER="PHONE NUMBER";
+	public static final String USER_ID_TYPE_PHONE="PHONE";
 
 	public static final String APPLICATION_JSON = "application/json";
 
 	public static final String VERIFY_CODE_PAGE = "verify";
 	
-	public static final int SECURE_RANDOM_LIMIT = 99999999;
+	public static final int SECURE_RANDOM_LIMIT = 999999;
 
 	public static final String SECURE_VERIFICATION_CODE = "secure_verification_code";
 	
 	public static final String LOGIN_PAGE = "login";
+	public static final String SMS_VERIFICATION_TYPE = "SMS_VERIFICATION";
+	public static final String EMAIL_VERIFICATION_TYPE = "EMAIL_VERIFICATION";
+	public static final String WEB_SEND_CODE = "/sendcode";
+	public static final String WEB_VERIFY_SEND_CODE = "/sendcode/verify";
+	public static final String EMAIL_TYPE = "email";
+	public static final String SMS_TYPE = "sms";
+	public static final String MAIL_SUBJECT = "Email Verification Code";
+	public static final String VERIFICATION_CODE_BODY = " is your FactureIT verification code.";
 
 	
 }

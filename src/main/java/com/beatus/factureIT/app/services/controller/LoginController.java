@@ -14,8 +14,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.beatus.factureIT.app.services.exception.FactureITServiceException;
 import com.beatus.factureIT.app.services.model.JSendResponse;
 import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.app.services.model.UserCreatedResponse;
@@ -101,6 +103,20 @@ public class LoginController {
 		LOGGER.info("In signup Resp : " + signupResp.getResponse());
 		return jsend(signupResp);
 	}
-
-
+	
+	@RequestMapping(value = Constants.WEB_SEND_CODE, method = RequestMethod.GET, consumes = ManufacturerAppMediaType.APPLICATION_JSON, produces = ManufacturerAppMediaType.APPLICATION_JSON)
+	public @ResponseBody JSendResponse<String> sendVerifyCode(HttpServletRequest request, HttpServletResponse response, @RequestParam String username, @RequestParam String userSendCodeType) throws ClassNotFoundException, SQLException, FactureITServiceException {
+		LOGGER.info("In checkLogin ");
+		String sendCodeResp = loginService.sendVerifyCode(request, response, username, userSendCodeType);
+		LOGGER.info("In checkLogin Resp : " + sendCodeResp);
+		return jsend(sendCodeResp);
+	}
+	
+	@RequestMapping(value = Constants.WEB_VERIFY_SEND_CODE, method = RequestMethod.GET, consumes = ManufacturerAppMediaType.APPLICATION_JSON, produces = ManufacturerAppMediaType.APPLICATION_JSON)
+	public @ResponseBody JSendResponse<String> verifySendCode(HttpServletRequest request, HttpServletResponse response, @RequestParam String username, @RequestParam String code,  @RequestParam String userSendCodeType) throws ClassNotFoundException, SQLException, FactureITServiceException {
+		LOGGER.info("In checkLogin ");
+		String verifyCodeResp = loginService.verifySendCode(username, code, userSendCodeType);
+		LOGGER.info("In checkLogin Resp : " + verifyCodeResp);
+		return jsend(verifyCodeResp);
+	}
 }

@@ -2,7 +2,7 @@ package com.beatus.factureIT.app.services.model;
 
 public class SMSConfiguration  extends BaseData{
 	
-	private int configurationId;
+	private String configurationId;
 	private String smsUrl;
 	private String parameterUsername;
 	private String parameterPassword;
@@ -46,10 +46,10 @@ public class SMSConfiguration  extends BaseData{
 	public void setMessageFooter(String messageFooter) {
 		this.messageFooter = messageFooter;
 	}
-	public int getConfigurationId() {
+	public String getConfigurationId() {
 		return configurationId;
 	}
-	public void setConfigurationId(int configurationId) {
+	public void setConfigurationId(String configurationId) {
 		this.configurationId = configurationId;
 	}
 }

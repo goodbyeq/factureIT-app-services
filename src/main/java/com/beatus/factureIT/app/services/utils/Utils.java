@@ -1,6 +1,7 @@
 package com.beatus.factureIT.app.services.utils;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
@@ -30,6 +31,15 @@ public class Utils {
 	public static Double calculateTaxOnMargin(Double marginAmount, Double taxPercentage) {
 		double taxAmount = (marginAmount * taxPercentage)/100;
 		return taxAmount;
+	}
+	
+	public static String generateSendCode() {
+		SecureRandom test = new SecureRandom();
+		int result = test.nextInt(Constants.SECURE_RANDOM_LIMIT);
+		String resultStr = result + "";
+		if (resultStr.length() != 6) 
+		    for (int x = resultStr.length(); x < 6; x++) resultStr = "0" + resultStr;
+		return resultStr;
 	}
 
     public static byte[] concat(byte[]...arrays)
