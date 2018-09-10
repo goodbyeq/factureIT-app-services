@@ -28,9 +28,26 @@ public class CustomerMapper implements RowMapper<Customer> {
 		customer.setCity(result.getString("customerCity"));
 		customer.setState(result.getString("customerState"));
 		customer.setZipcode(result.getString("customerZipcode"));
-		List<String> userType = new ArrayList<String>();
-		userType.add(Constants.CUSTOMER_TYPE);
-		customer.setUserType(userType);
+		customer.setUsername(result.getString("username"));
+		String userType = result.getString("user_type");
+		List<String> userTypes = new ArrayList<String>();
+		if(userType.contains(Constants.DISTRIBUTOR_TYPE)){
+			userTypes.add(Constants.DISTRIBUTOR_TYPE);
+		}
+		if(userType.contains(Constants.RETAILER_TYPE)){
+			userTypes.add(Constants.RETAILER_TYPE);
+		}
+		if(userType.contains(Constants.MANUFACTURER_TYPE)){
+			userTypes.add(Constants.MANUFACTURER_TYPE);
+		}
+		if(userType.contains(Constants.CUSTOMER_TYPE)){
+			userTypes.add(Constants.CUSTOMER_TYPE);
+		}
+		if(userType.contains(Constants.COLLECTION_AGENT_TYPE)){
+			userTypes.add(Constants.COLLECTION_AGENT_TYPE);
+		}
+		customer.setUserType(userTypes);
+		customer.setIsVerified(result.getString("verified"));
 		return customer;
 	}
 

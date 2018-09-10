@@ -96,8 +96,9 @@ public class ManufacturerRepository {
 					+ " dist.manufacturer_company_type AS manufacturerCompanyType, dist.manufacturer_company_id AS manufacturerCompanyId, dist.uid AS uid, "
 					+ " dist.manufacturer_first_name AS manufacturerFirstName, dist.manufacturer_last_name AS manufacturerLastName, "
 					+ " dist.manufacturer_phone AS manufacturerPhone, dist.manufacturer_email AS manufacturerEmail, dist.manufacturer_address AS manufacturerAddress, "
-					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode "
-					+ " FROM manufacturer dist" + " WHERE manufacturer_id = ? ";
+					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM manufacturer dist, users u WHERE dist.uid = u.uid AND dist.manufacturer_id = ? ";
 			Manufacturer manufacturer = jdbcTemplate.queryForObject(sql, new Object[] { id }, new ManufacturerMapper());
 			return manufacturer;
 		} finally {
@@ -113,8 +114,9 @@ public class ManufacturerRepository {
 					+ " dist.manufacturer_company_type AS manufacturerCompanyType, dist.manufacturer_company_id AS manufacturerCompanyId, dist.uid AS uid, "
 					+ " dist.manufacturer_first_name AS manufacturerFirstName, dist.manufacturer_last_name AS manufacturerLastName, "
 					+ " dist.manufacturer_phone AS manufacturerPhone, dist.manufacturer_email AS manufacturerEmail, dist.manufacturer_address AS manufacturerAddress, "
-					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode "
-					+ " FROM manufacturer dist, users user" + " WHERE user.uid = ? AND dist.uid = user.uid ";
+					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM manufacturer dist, users u WHERE dist.uid = u.uid AND u.uid = ? ";
 			Manufacturer manufacturer = jdbcTemplate.queryForObject(sql, new Object[] { uid },
 					new ManufacturerMapper());
 			return manufacturer;
@@ -130,8 +132,9 @@ public class ManufacturerRepository {
 					+ " dist.manufacturer_company_type AS manufacturerCompanyType, dist.manufacturer_company_id AS manufacturerCompanyId, dist.uid AS uid, "
 					+ " dist.manufacturer_first_name AS manufacturerFirstName, dist.manufacturer_last_name AS manufacturerLastName, "
 					+ " dist.manufacturer_phone AS manufacturerPhone, dist.manufacturer_email AS manufacturerEmail, dist.manufacturer_address AS manufacturerAddress, "
-					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode "
-					+ " FROM manufacturer dist";
+					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM manufacturer dist, users u WHERE dist.uid = u.uid";
 			List<Manufacturer> manufacturers = jdbcTemplate.query(sql, new ManufacturerMapper());
 			return manufacturers;
 		} finally {
@@ -146,8 +149,9 @@ public class ManufacturerRepository {
 					+ " dist.manufacturer_company_type AS manufacturerCompanyType, dist.manufacturer_company_id AS manufacturerCompanyId, dist.uid AS uid, "
 					+ " dist.manufacturer_first_name AS manufacturerFirstName, dist.manufacturer_last_name AS manufacturerLastName, "
 					+ " dist.manufacturer_phone AS manufacturerPhone, dist.manufacturer_email AS manufacturerEmail, dist.manufacturer_address AS manufacturerAddress, "
-					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode "
-					+ " FROM manufacturer dist WHERE earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
+					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM manufacturer dist, users u WHERE dist.uid = u.uid AND earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
 			List<Manufacturer> manufacturers = jdbcTemplate.query(sql, new ManufacturerMapper());
 			return manufacturers;
 		} finally {

@@ -91,8 +91,9 @@ public class DistributorRepository {
 					+ " dist.distributor_company_type AS distributorCompanyType, dist.distributor_company_id AS distributorCompanyId, dist.uid AS uid, "
 					+ " dist.distributor_first_name AS distributorFirstName, dist.distributor_last_name AS distributorLastName, "
 					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
-					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
-					+ " FROM distributor dist" + " WHERE distributor_id = ? ";
+					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM distributor dist, users u" + " WHERE distributor_id = ? AND dist.uid = u.uid ";
 			Distributor distributor = jdbcTemplate.queryForObject(sql, new Object[] {  id }, new DistributorMapper());
 			return distributor;
 		} finally {
@@ -108,8 +109,9 @@ public class DistributorRepository {
 					+ " dist.distributor_company_type AS distributorCompanyType, dist.distributor_company_id AS distributorCompanyId, dist.uid AS uid, "
 					+ " dist.distributor_first_name AS distributorFirstName, dist.distributor_last_name AS distributorLastName, "
 					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
-					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
-					+ " FROM distributor dist, users user" + " WHERE user.uid = ? AND dist.uid = user.uid ";
+					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM distributor dist, users u" + " WHERE user.uid = ? AND dist.uid = u.uid ";
 			Distributor distributor = jdbcTemplate.queryForObject(sql, new Object[] {  uid }, new DistributorMapper());
 			return distributor;
 		} finally {
@@ -124,8 +126,9 @@ public class DistributorRepository {
 					+ " dist.distributor_company_type AS distributorCompanyType, dist.distributor_company_id AS distributorCompanyId, dist.uid AS uid, "
 					+ " dist.distributor_first_name AS distributorFirstName, dist.distributor_last_name AS distributorLastName, "
 					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
-					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
-					+ " FROM distributor dist";
+					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM distributor dist, users u WHERE dist.uid = u.uid";
 			List<Distributor> distributors = jdbcTemplate.query(sql, new DistributorMapper());
 			return distributors;
 		} finally {
@@ -140,8 +143,9 @@ public class DistributorRepository {
 					+ " dist.distributor_company_type AS distributorCompanyType, dist.distributor_company_id AS distributorCompanyId, dist.uid AS uid, "
 					+ " dist.distributor_first_name AS distributorFirstName, dist.distributor_last_name AS distributorLastName, "
 					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
-					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
-					+ " FROM distributor dist WHERE earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
+					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM distributor dist, users u WHERE dist.uid = u.uid AND earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
 			List<Distributor> distributors = jdbcTemplate.query(sql, new DistributorMapper());
 			return distributors;
 		} finally {

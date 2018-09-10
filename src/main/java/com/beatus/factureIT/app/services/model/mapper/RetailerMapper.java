@@ -28,9 +28,26 @@ public class RetailerMapper implements RowMapper<Retailer> {
 		retailer.setCity(result.getString("retailerCity"));
 		retailer.setState(result.getString("retailerState"));
 		retailer.setZipcode(result.getString("retailerZipcode"));
-		List<String> userType = new ArrayList<String>();
-		userType.add(Constants.RETAILER_TYPE);
-		retailer.setUserType(userType);
+		retailer.setUsername(result.getString("username"));
+		String userType = result.getString("user_type");
+		List<String> userTypes = new ArrayList<String>();
+		if(userType.contains(Constants.DISTRIBUTOR_TYPE)){
+			userTypes.add(Constants.DISTRIBUTOR_TYPE);
+		}
+		if(userType.contains(Constants.RETAILER_TYPE)){
+			userTypes.add(Constants.RETAILER_TYPE);
+		}
+		if(userType.contains(Constants.MANUFACTURER_TYPE)){
+			userTypes.add(Constants.MANUFACTURER_TYPE);
+		}
+		if(userType.contains(Constants.CUSTOMER_TYPE)){
+			userTypes.add(Constants.CUSTOMER_TYPE);
+		}
+		if(userType.contains(Constants.COLLECTION_AGENT_TYPE)){
+			userTypes.add(Constants.COLLECTION_AGENT_TYPE);
+		}
+		retailer.setUserType(userTypes);
+		retailer.setIsVerified(result.getString("verified"));
 		return retailer;
 	}
 

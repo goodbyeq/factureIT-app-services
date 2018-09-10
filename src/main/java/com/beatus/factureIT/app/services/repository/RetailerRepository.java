@@ -87,8 +87,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 					+ " dist.retailer_company_type AS retailerCompanyType, dist.retailer_company_id AS retailerCompanyId, dist.uid AS uid, "
 					+ " dist.retailer_first_name AS retailerFirstName, dist.retailer_last_name AS retailerLastName, "
 					+ " dist.retailer_phone AS retailerPhone, dist.retailer_email AS retailerEmail, dist.retailer_address AS retailerAddress, "
-					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode "
-					+ " FROM retailer dist" + " WHERE retailer_id = ? ";
+					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM retailer dist, users u WHERE dist.uid = u.uid AND dist.retailer_id = ? ";
 			Retailer retailer = jdbcTemplate.queryForObject(sql, new Object[] {  id }, new RetailerMapper());
 			return retailer;
 		} finally {
@@ -103,8 +104,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 					+ " dist.retailer_company_type AS retailerCompanyType, dist.retailer_company_id AS retailerCompanyId, dist.uid AS uid, "
 					+ " dist.retailer_first_name AS retailerFirstName, dist.retailer_last_name AS retailerLastName, "
 					+ " dist.retailer_phone AS retailerPhone, dist.retailer_email AS retailerEmail, dist.retailer_address AS retailerAddress, "
-					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode "
-					+ " FROM retailer dist, users user" + " WHERE user.uid = ? AND dist.uid = user.uid ";
+					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM retailer dist, users u WHERE dist.uid = u.uid AND u.uid = ? ";
 			Retailer retailer = jdbcTemplate.queryForObject(sql, new Object[] {  uid }, new RetailerMapper());
 			return retailer;
 		} finally {
@@ -118,8 +120,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 					+ " dist.retailer_company_type AS retailerCompanyType, dist.retailer_company_id AS retailerCompanyId, dist.uid AS uid, "
 					+ " dist.retailer_first_name AS retailerFirstName, dist.retailer_last_name AS retailerLastName, "
 					+ " dist.retailer_phone AS retailerPhone, dist.retailer_email AS retailerEmail, dist.retailer_address AS retailerAddress, "
-					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode "
-					+ " FROM retailer dist";
+					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM retailer dist, users u WHERE dist.uid = u.uid";
 			List<Retailer> retailers = jdbcTemplate.query(sql, new RetailerMapper());
 			return retailers;
 		} finally {
@@ -134,8 +137,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 					+ " dist.retailer_company_type AS retailerCompanyType, dist.retailer_company_id AS retailerCompanyId, dist.uid AS uid, "
 					+ " dist.retailer_first_name AS retailerFirstName, dist.retailer_last_name AS retailerLastName, "
 					+ " dist.retailer_phone AS retailerPhone, dist.retailer_email AS retailerEmail, dist.retailer_address AS retailerAddress, "
-					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode "
-					+ " FROM retailer dist WHERE earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
+					+ " dist.retailer_city AS retailerCity, dist.retailer_state AS retailerState, dist.retailer_zipcode AS retailerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM retailer dist, users u WHERE dist.uid = u.uid AND earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
 			List<Retailer> retailers = jdbcTemplate.query(sql, new RetailerMapper());
 			return retailers;
 		} finally {

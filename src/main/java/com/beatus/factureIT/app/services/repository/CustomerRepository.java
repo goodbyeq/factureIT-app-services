@@ -83,8 +83,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CustomerRepository.
 					+ " dist.customer_company_type AS customerCompanyType, dist.customer_company_id AS customerCompanyId, dist.uid AS uid, "
 					+ " dist.customer_first_name AS customerFirstName, dist.customer_last_name AS customerLastName, "
 					+ " dist.customer_phone AS customerPhone, dist.customer_email AS customerEmail, dist.customer_address AS customerAddress, "
-					+ " dist.customer_city AS customerCity, dist.customer_state AS customerState, dist.customer_zipcode AS customerZipcode "
-					+ " FROM customer dist" + " WHERE customer_id = ? ";
+					+ " dist.customer_city AS customerCity, dist.customer_state AS customerState, dist.customer_zipcode AS customerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM customer dist, users u WHERE dist.uid = u.uid AND dist.customer_id = ? ";
 			Customer customer = jdbcTemplate.queryForObject(sql, new Object[] {  id }, new CustomerMapper());
 			return customer;
 		} finally {
@@ -99,8 +100,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CustomerRepository.
 					+ " dist.customer_company_type AS customerCompanyType, dist.customer_company_id AS customerCompanyId, dist.uid AS uid, "
 					+ " dist.customer_first_name AS customerFirstName, dist.customer_last_name AS customerLastName, "
 					+ " dist.customer_phone AS customerPhone, dist.customer_email AS customerEmail, dist.customer_address AS customerAddress, "
-					+ " dist.customer_city AS customerCity, dist.customer_state AS customerState, dist.customer_zipcode AS customerZipcode "
-					+ " FROM customer dist, users user" + " WHERE user.uid = ? AND dist.uid = user.uid ";
+					+ " dist.customer_city AS customerCity, dist.customer_state AS customerState, dist.customer_zipcode AS customerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM customer dist, users u WHERE dist.uid = u.uid AND u.uid = ? ";
 			Customer customer = jdbcTemplate.queryForObject(sql, new Object[] {  uid }, new CustomerMapper());
 			return customer;
 		} finally {
@@ -114,8 +116,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(CustomerRepository.
 					+ " dist.customer_company_type AS customerCompanyType, dist.customer_company_id AS customerCompanyId, dist.uid AS uid, "
 					+ " dist.customer_first_name AS customerFirstName, dist.customer_last_name AS customerLastName, "
 					+ " dist.customer_phone AS customerPhone, dist.customer_email AS customerEmail, dist.customer_address AS customerAddress, "
-					+ " dist.customer_city AS customerCity, dist.customer_state AS customerState, dist.customer_zipcode AS customerZipcode "
-					+ " FROM customer dist";
+					+ " dist.customer_city AS customerCity, dist.customer_state AS customerState, dist.customer_zipcode AS customerZipcode, "
+					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
+					+ " FROM customer dist, users u WHERE dist.uid = u.uid";
 			List<Customer> customers = jdbcTemplate.query(sql, new CustomerMapper());
 			return customers;
 		} finally {
