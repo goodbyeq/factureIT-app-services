@@ -153,6 +153,10 @@ public class Constants {
 	public static final String SMS_TYPE = "sms";
 	public static final String MAIL_SUBJECT = "Email Verification Code";
 	public static final String VERIFICATION_CODE_BODY = " is your FactureIT verification code.";
+	public static final String CREATED = "Created Successfully";
+	public static final String ERROR_CREATION = "Error Creation";
+	public static final String WEB_CONTACT_REQUEST = "/contact";
+	public static final String WEB_CONTACT_ADD_REQUEST = "/addContact";
 
 	
 }

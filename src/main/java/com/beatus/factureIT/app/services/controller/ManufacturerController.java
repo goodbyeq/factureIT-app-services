@@ -59,7 +59,7 @@ public class ManufacturerController {
 	}
 	
 	public static JSendResponse<String> jsend(String response) {
-		if (response == null) {
+		if (response != null) {
 			return new JSendResponse<String>(Constants.SUCCESS, "Request processed Successfully");
 		} else {
 			return new JSendResponse<String>(Constants.FAILURE, "Request Processing failed");
