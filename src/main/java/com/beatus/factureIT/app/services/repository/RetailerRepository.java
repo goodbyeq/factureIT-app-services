@@ -17,9 +17,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.beatus.factureIT.app.services.model.Distributor;
+import com.beatus.factureIT.app.services.model.Product;
+import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.app.services.model.mapper.DistributorMapper;
+import com.beatus.factureIT.app.services.model.mapper.RetailerProductCategoryMapper;
+import com.beatus.factureIT.app.services.model.mapper.RetailerProductMapper;
 import com.beatus.factureIT.app.services.model.mapper.RetailerMapper;
 import com.beatus.factureIT.app.services.utils.Utils;
 
@@ -145,6 +149,99 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 		} finally {
 		}
 	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public boolean addProductsForRetailer(List<Product> products, String retailerId) {
+		try {
+			LOGGER.info("In addProductForRetailer");
+			String sql = "INSERT INTO retailer_product (retailer_product_id, retailer_id, product_name, product_desc, product_category_id, brand_name, hsn_code, product_image, product_price, product_unit, product_total_quantity_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			int[] rowsInserted = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+				@Override
+				public void setValues(PreparedStatement ps, int i) throws SQLException {
+					Product product = products.get(i);
+					ps.setString(1, Utils.generateRandomKey(50));
+					ps.setString(2, retailerId);
+					ps.setString(3, product.getProductName());
+					ps.setString(4, product.getProductDesc());					
+					ps.setString(5, product.getProductCategoryId());
+					ps.setString(6, product.getBrandName());
+					ps.setString(7, product.getHsnCode());
+					ps.setString(8, product.getProductImageString());
+					ps.setString(9, product.getPrice());
+					ps.setString(10, product.getUnit());
+					ps.setString(11, product.getTotalQuantityAvailable());
+				}
+
+				@Override
+				public int getBatchSize() {
+					return products.size();
+				}
+			});
+			if (rowsInserted.length > 0) {
+				LOGGER.info("A new retailer was inserted successfully!");
+				return true;
+			} else {
+				return false;
+			}
+		} finally {
+		}
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
+	public boolean addProductCategoriesForRetailer(List<ProductCategory> productCategories, String retailerId) {
+		try {
+			LOGGER.info("In addProductCategoriesForRetailer");
+			String sql = "INSERT INTO retailer_product_category (retailer_product_category_id, retailer_id, product_category_name, product_category_desc) VALUES (?, ?, ?, ?)";
+			int[] rowsInserted = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+				@Override
+				public void setValues(PreparedStatement ps, int i) throws SQLException {
+					ProductCategory productCategory = productCategories.get(i);
+					ps.setString(1, Utils.generateRandomKey(50));
+					ps.setString(2, retailerId);
+					ps.setString(3, productCategory.getProductCategoryName());
+					ps.setString(4, productCategory.getProductCategoryDesc());					
+				}
+
+				@Override
+				public int getBatchSize() {
+					return productCategories.size();
+				}
+			});
+			if (rowsInserted.length > 0) {
+				LOGGER.info("A new retailer was inserted successfully!");
+				return true;
+			} else {
+				return false;
+			}
+		} finally {
+		}
+	}
+	
+	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
+	public List<Product> getAllProductsOfRetailer(String retailerId){
+		try {
+			LOGGER.info("In getAllProductsOfRetailer");
+			String sql = "SELECT * "
+					+ " FROM retailer_product WHERE retailer_id = ?";
+			List<Product> retailerProducts = jdbcTemplate.query(sql, new Object[] {retailerId},  new RetailerProductMapper());
+			return retailerProducts;
+		} finally {
+		}
+	}
+	
+	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
+	public List<ProductCategory> getAllProductCategoriesOfRetailer(String retailerId){
+		try {
+			LOGGER.info("In getAllProductsOfRetailer");
+			String sql = "SELECT manProCat.retailer_product_category_id AS productCategoryId, manProCat.retailer_id AS retailerId, "
+					+ " manProCat.product_category_name AS productCategoryName, manProCat.product_category_desc AS productCategoryDesc "
+					+ " FROM retailer_product_category manProCat WHERE manProCat.retailer_id = ?";
+			List<ProductCategory> retailerProductCategories = jdbcTemplate.query(sql, new Object[] {retailerId},  new RetailerProductCategoryMapper());
+			return retailerProductCategories;
+		} finally {
+		}
+	}
+	
 
 	
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)

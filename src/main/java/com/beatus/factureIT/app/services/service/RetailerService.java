@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.beatus.factureIT.app.services.model.Distributor;
+import com.beatus.factureIT.app.services.model.Product;
+import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.app.services.repository.RetailerRepository;
@@ -64,6 +66,30 @@ public class RetailerService {
 		LOGGER.info("In editRetailer");
 		boolean isRetailerEdited = retailerRepository.editRetailer(retailer);
 		return isRetailerEdited;
+	}
+	
+	public boolean addProductsForRetailer(List<Product> products, String retailerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addProductsForRetailer");
+		boolean isProductsAdded = retailerRepository.addProductsForRetailer(products, retailerId);
+		return isProductsAdded;
+	}
+	
+	public boolean addProductCategoriesForRetailer(List<ProductCategory> productCategories, String retailerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addProductCategoriesForRetailer");
+		boolean isCategoriesAdded = retailerRepository.addProductCategoriesForRetailer(productCategories, retailerId);
+		return isCategoriesAdded;
+	}
+
+	public List<Product> getAllProductsOfRetailer(String retailerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getAllProductsOfRetailer");
+		List<Product> retailerProducts = retailerRepository.getAllProductsOfRetailer(retailerId);
+		return retailerProducts;
+	}
+	
+	public List<ProductCategory> getAllProductCategoriesOfRetailer(String retailerId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getAllProductCategoriesOfRetailer");
+		List<ProductCategory> retailerProductCategories = retailerRepository.getAllProductCategoriesOfRetailer(retailerId);
+		return retailerProductCategories;
 	}
 	
 	public List<Retailer> getAllRetailersInASpecificArea(String latitude, String longitude, String radius) throws ClassNotFoundException, SQLException {

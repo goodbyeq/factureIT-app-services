@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.beatus.factureIT.app.services.model.Distributor;
 import com.beatus.factureIT.app.services.model.DistributorResponse;
 import com.beatus.factureIT.app.services.model.JSendResponse;
+import com.beatus.factureIT.app.services.model.Product;
+import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.service.DistributorService;
 import com.beatus.factureIT.app.services.utils.Constants;
@@ -131,6 +133,43 @@ public class DistributorsController {
 				? distributor.getFirstname() : "No Distributor data" + " got edited successfully");
 		return jsend(isDistributorEdited);
 	}
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_ADD_PRODUCTS, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> addProductsForDistributorPost(HttpServletRequest request,
+			ModelMap model, @RequestParam List<Product> products, @RequestParam String distributorId) throws ClassNotFoundException, SQLException {
+		boolean isProductsAdded = distributorService.addProductsForDistributor(products, distributorId);
+		LOGGER.info("After the add products call for the distributor with Id: " + distributorId != null
+				? distributorId : "No Distributor data");
+		return jsend(isProductsAdded);
+	}
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_ADD_CATEGORIES, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> addProductCategoriesForDistributorPost(HttpServletRequest request,
+			ModelMap model, @RequestParam List<ProductCategory> productCategories, @RequestParam String distributorId) throws ClassNotFoundException, SQLException {
+		boolean isProductsAdded = distributorService.addProductCategoriesForDistributor(productCategories, distributorId);
+		LOGGER.info("After the add product categories call for the distributor with Id: " + distributorId != null
+				? distributorId : "No Distributor data");
+		return jsend(isProductsAdded);
+	}
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_GET_PRODUCTS, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<List<?>> getAllProductsOfDistributorGet(HttpServletRequest request,
+			ModelMap model, @RequestParam String distributorId) throws ClassNotFoundException, SQLException {
+		List<Product> distributorProducts = distributorService.getAllProductsOfDistributor(distributorId);
+		LOGGER.info("After the get call for the products of distributors with ID:" + distributorId != null
+				? distributorId : "No Distributor data");
+		return jsend(distributorProducts);
+	}
+	
+	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_GET_PRODUCT_CATEGORIES, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<List<?>> getAllProductCategoriesOfDistributorGet(HttpServletRequest request,
+			ModelMap model, @RequestParam String distributorId) throws ClassNotFoundException, SQLException {
+		List<ProductCategory> distributorProductCategories = distributorService.getAllProductCategoriesOfDistributor(distributorId);
+		LOGGER.info("After the get call for the product categories of distributors with ID:" + distributorId != null
+				? distributorId : "No Distributor data");
+		return jsend(distributorProductCategories);
+	}
+	
 	
 	
 	@RequestMapping(value = Constants.WEB_DISTRIBUTOR_ADD_RELATED_RETAILER, method = RequestMethod.POST)

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.beatus.factureIT.app.services.model.CollectionAgent;
 import com.beatus.factureIT.app.services.model.Distributor;
+import com.beatus.factureIT.app.services.model.Product;
+import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.User;
 import com.beatus.factureIT.app.services.repository.DistributorRepository;
@@ -53,6 +55,30 @@ public class DistributorService {
 		LOGGER.info("In editDistributor");
 		boolean isDistributorEdited = distributorRepository.editDistributor(distributor);
 		return isDistributorEdited;
+	}
+	
+	public boolean addProductsForDistributor(List<Product> products, String distributorId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addProductsForDistributor");
+		boolean isProductsAdded = distributorRepository.addProductsForDistributor(products, distributorId);
+		return isProductsAdded;
+	}
+	
+	public boolean addProductCategoriesForDistributor(List<ProductCategory> productCategories, String distributorId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addProductCategoriesForDistributor");
+		boolean isCategoriesAdded = distributorRepository.addProductCategoriesForDistributor(productCategories, distributorId);
+		return isCategoriesAdded;
+	}
+
+	public List<Product> getAllProductsOfDistributor(String distributorId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getAllProductsOfDistributor");
+		List<Product> distributorProducts = distributorRepository.getAllProductsOfDistributor(distributorId);
+		return distributorProducts;
+	}
+	
+	public List<ProductCategory> getAllProductCategoriesOfDistributor(String distributorId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getAllProductCategoriesOfDistributor");
+		List<ProductCategory> distributorProductCategories = distributorRepository.getAllProductCategoriesOfDistributor(distributorId);
+		return distributorProductCategories;
 	}
 	
 	public boolean addDistributorRelatedRetailers(List<String> retailerIds, String distributorId) throws ClassNotFoundException, SQLException {

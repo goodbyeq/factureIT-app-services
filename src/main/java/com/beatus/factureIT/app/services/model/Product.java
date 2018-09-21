@@ -1,6 +1,6 @@
 package com.beatus.factureIT.app.services.model;
 
-public class Product  extends BaseData implements Comparable<Product>{
+public class Product implements Comparable<Product>{
 	private String productId;
 	private String productName;
 	private String productDesc;
@@ -11,6 +11,9 @@ public class Product  extends BaseData implements Comparable<Product>{
 	private String hsnCode;
 	private String price;
 	private String unit;
+	private String totalQuantityAvailable;
+	private String userType;
+	private String userTypeID;
 	
 	public String getProductId() {
 		return productId;
@@ -96,5 +99,28 @@ public class Product  extends BaseData implements Comparable<Product>{
 	public void setUnit(String unit) {
 		this.unit = unit;
 	}
-	
+
+	public String getTotalQuantityAvailable() {
+		return totalQuantityAvailable;
+	}
+
+	public void setTotalQuantityAvailable(String totalQuantityAvailable) {
+		this.totalQuantityAvailable = totalQuantityAvailable;
+	}
+
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+
+	public String getUserTypeID() {
+		return userTypeID;
+	}
+
+	public void setUserTypeID(String userTypeID) {
+		this.userTypeID = userTypeID;
+	}
 }

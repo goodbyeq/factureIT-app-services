@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.beatus.factureIT.app.services.model.Distributor;
 import com.beatus.factureIT.app.services.model.JSendResponse;
+import com.beatus.factureIT.app.services.model.Product;
+import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.RetailerResponse;
 import com.beatus.factureIT.app.services.service.RetailerService;
@@ -132,6 +134,43 @@ public class RetailerController {
 		return jsend(isRetailerEdited);
 	}
 	
+	@RequestMapping(value = Constants.WEB_RETAILER_ADD_PRODUCTS, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> addProductsForRetailerPost(HttpServletRequest request,
+			ModelMap model, @RequestParam List<Product> products, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+		boolean isProductsAdded = retailerService.addProductsForRetailer(products, retailerId);
+		LOGGER.info("After the add products call for the retailer with Id: " + retailerId != null
+				? retailerId : "No Retailer data");
+		return jsend(isProductsAdded);
+	}
+	
+	@RequestMapping(value = Constants.WEB_RETAILER_ADD_CATEGORIES, method = RequestMethod.POST)
+	public @ResponseBody JSendResponse<String> addProductCategoriesForRetailerPost(HttpServletRequest request,
+			ModelMap model, @RequestParam List<ProductCategory> productCategories, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+		boolean isProductsAdded = retailerService.addProductCategoriesForRetailer(productCategories, retailerId);
+		LOGGER.info("After the add product categories call for the retailer with Id: " + retailerId != null
+				? retailerId : "No Retailer data");
+		return jsend(isProductsAdded);
+	}
+	
+	@RequestMapping(value = Constants.WEB_RETAILER_GET_PRODUCTS, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<List<?>> getAllProductsOfRetailerGet(HttpServletRequest request,
+			ModelMap model, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+		List<Product> retailerProducts = retailerService.getAllProductsOfRetailer(retailerId);
+		LOGGER.info("After the get call for the products of retailers with ID:" + retailerId != null
+				? retailerId : "No Retailer data");
+		return jsend(retailerProducts);
+	}
+	
+	@RequestMapping(value = Constants.WEB_RETAILER_GET_PRODUCT_CATEGORIES, method = RequestMethod.GET)
+	public @ResponseBody JSendResponse<List<?>> getAllProductCategoriesOfRetailerGet(HttpServletRequest request,
+			ModelMap model, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+		List<ProductCategory> retailerProductCategories = retailerService.getAllProductCategoriesOfRetailer(retailerId);
+		LOGGER.info("After the get call for the product categories of retailers with ID:" + retailerId != null
+				? retailerId : "No Retailer data");
+		return jsend(retailerProductCategories);
+	}
+	
+	
 	@RequestMapping(value = Constants.WEB_RETAILER_ADD_RELATED_DISTRIBUTORS, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addRetailerRelatedDistributorsPost(HttpServletRequest request,
 			ModelMap model, @RequestParam List<String> distributorIds, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
@@ -149,7 +188,4 @@ public class RetailerController {
 				? retailerId : "No Retailer data");
 		return jsend(distributors);
 	}
-	
-	
-
 }

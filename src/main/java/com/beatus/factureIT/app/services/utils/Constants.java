@@ -157,6 +157,12 @@ public class Constants {
 	public static final String ERROR_CREATION = "Error Creation";
 	public static final String WEB_CONTACT_REQUEST = "/contact";
 	public static final String WEB_CONTACT_ADD_REQUEST = "/addContact";
-
-	
+	public static final String WEB_DISTRIBUTOR_ADD_PRODUCTS = "/addProducts";
+	public static final String WEB_DISTRIBUTOR_ADD_CATEGORIES = "/addCategories";
+	public static final String WEB_DISTRIBUTOR_GET_PRODUCTS = "/getProductsByDistributorID";
+	public static final String WEB_DISTRIBUTOR_GET_PRODUCT_CATEGORIES = "/getProductCategoriesByDistributorID";
+	public static final String WEB_RETAILER_ADD_PRODUCTS = "/addProducts";
+	public static final String WEB_RETAILER_ADD_CATEGORIES = "/addCategories";
+	public static final String WEB_RETAILER_GET_PRODUCTS = "/getProductsByRetailerID";
+	public static final String WEB_RETAILER_GET_PRODUCT_CATEGORIES = "/getProductCategoriesByRetailerID";	
 }

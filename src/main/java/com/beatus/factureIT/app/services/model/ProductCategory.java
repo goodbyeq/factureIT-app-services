@@ -5,6 +5,7 @@ public class ProductCategory {
 	private String productCategoryId;
 	private String productCategoryName;
 	private String productCategoryDesc;
+	
 	public String getProductCategoryId() {
 		return productCategoryId;
 	}

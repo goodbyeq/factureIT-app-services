@@ -162,7 +162,7 @@ public class ManufacturerRepository {
 	public boolean addProductsForManufacturer(List<Product> products, String manufacturerId) {
 		try {
 			LOGGER.info("In addProductForManufacture");
-			String sql = "INSERT INTO manufacturer_product (manufacturer_product_id, manufacturer_id, product_name, product_desc, product_category_id, brand_name, hsn_code, product_image, product_price, product_unit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO manufacturer_product (manufacturer_product_id, manufacturer_id, product_name, product_desc, product_category_id, brand_name, hsn_code, product_image, product_price, product_unit, product_total_quantity_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			int[] rowsInserted = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 				@Override
 				public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -177,6 +177,7 @@ public class ManufacturerRepository {
 					ps.setString(8, product.getProductImageString());
 					ps.setString(9, product.getPrice());
 					ps.setString(10, product.getUnit());
+					ps.setString(11, product.getTotalQuantityAvailable());
 				}
 
 				@Override
@@ -228,11 +229,8 @@ public class ManufacturerRepository {
 	public List<Product> getAllProductsOfManufacturer(String manufacturerId){
 		try {
 			LOGGER.info("In getAllProductsOfManufacturer");
-			String sql = "SELECT manPro.manufacturer_product_id AS productId, manPro.manufacturer_id AS manufacturerId, "
-					+ " manPro.product_name AS productName, manPro.product_desc AS productDesc, manPro.product_category_id AS productCategoryId, "
-					+ " manPro.brand_name AS brandName, manPro.hsn_code AS hsnCode, "
-					+ " manPro.product_image AS productImage "
-					+ " FROM manufacturer_product manPro WHERE manPro.manufacturer_id = ?";
+			String sql = "SELECT * "
+					+ " FROM manufacturer_product WHERE manufacturer_id = ?";
 			List<Product> manufacturerProducts = jdbcTemplate.query(sql, new Object[] {manufacturerId},  new ManufacturerProductMapper());
 			return manufacturerProducts;
 		} finally {
