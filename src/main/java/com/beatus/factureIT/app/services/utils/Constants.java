@@ -105,6 +105,12 @@ public class Constants {
 	public static final String WEB_MANUFACTURER_GET_RELATED_DISTRIBUTORS = "/getRelatedDistributors";
 	public static final String WEB_MANUFACTURER_ADD_ROUTE = "/addRoute";
 	public static final String WEB_MANUFACTURER_DELETE_MANUFACTURER = "/deleteManufacturer";
+	public static final String WEB_NOTIFICATION_REQUEST = "/notification";
+	public static final String WEB_NOTIFICATION_ADD_NOTIFICATION = "/addNotification";
+	public static final String WEB_NOTIFICATION_GET_NOTIFICATION_SENDER = "/getNotification/sender";
+	public static final String WEB_NOTIFICATION_GET_NOTIFICATION_RECEIVER = "/getNotification/receiver";
+
+
 	
 	public static final String WEB_DISTRIBUTOR_ADD_RELATED_RETAILER = "/addRelatedDistributors";
 	public static final String WEB_DISTRIBUTOR_GET_RELATED_RETAILER = "/getRelatedDistributors";
@@ -164,5 +170,9 @@ public class Constants {
 	public static final String WEB_RETAILER_ADD_PRODUCTS = "/addProducts";
 	public static final String WEB_RETAILER_ADD_CATEGORIES = "/addCategories";
 	public static final String WEB_RETAILER_GET_PRODUCTS = "/getProductsByRetailerID";
-	public static final String WEB_RETAILER_GET_PRODUCT_CATEGORIES = "/getProductCategoriesByRetailerID";	
+	public static final String WEB_RETAILER_GET_PRODUCT_CATEGORIES = "/getProductCategoriesByRetailerID";
+	public static final String WEB_DISTRIBUTOR_ADD_RELATED_MANUFACTURER = "/addRelatedManufactures";	
+	public static final String WEB_DISTRIBUTOR_GET_RELATED_MANUFACTURER = "/getRelatedManufactures";
+	public static final String OTHER = "Other";	
+
 }

@@ -16,6 +16,7 @@ import com.beatus.factureIT.app.services.model.Product;
 import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.User;
+import com.beatus.factureIT.app.services.model.UserTypeIdAndProducts;
 import com.beatus.factureIT.app.services.repository.DistributorRepository;
 
 @Service
@@ -81,9 +82,22 @@ public class DistributorService {
 		return distributorProductCategories;
 	}
 	
-	public boolean addDistributorRelatedRetailers(List<String> retailerIds, String distributorId) throws ClassNotFoundException, SQLException {
+	public boolean addDistributorRelatedManufacturers(List<UserTypeIdAndProducts> manufacturerAndProducts, String distributorId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In addDistributorRelatedManufacturers");
+		boolean isRetailerAdded = distributorRepository.addDistributorRelatedRetailers(manufacturerAndProducts, distributorId);
+		return isRetailerAdded;
+	}
+	
+	public List<Retailer> getDistributorRelatedManufacturers(String distributorId) throws ClassNotFoundException, SQLException {
+		LOGGER.info("In getDistributorRelatedManufacturers");
+		List<Retailer> retailers = distributorRepository.getDistributorRelatedRetailers(distributorId);
+		return retailers;
+	}
+	
+	
+	public boolean addDistributorRelatedRetailers(List<UserTypeIdAndProducts> retailerAndProducts, String distributorId) throws ClassNotFoundException, SQLException {
 		LOGGER.info("In addDistributorRelatedRetailers");
-		boolean isRetailerAdded = distributorRepository.addDistributorRelatedRetailers(retailerIds, distributorId);
+		boolean isRetailerAdded = distributorRepository.addDistributorRelatedRetailers(retailerAndProducts, distributorId);
 		return isRetailerAdded;
 	}
 	

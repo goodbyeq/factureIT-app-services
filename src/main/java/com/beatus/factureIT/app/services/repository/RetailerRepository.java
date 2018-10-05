@@ -2,10 +2,13 @@ package com.beatus.factureIT.app.services.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +24,12 @@ import com.beatus.factureIT.app.services.model.Product;
 import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.User;
+import com.beatus.factureIT.app.services.model.UserTypeIdAndProducts;
 import com.beatus.factureIT.app.services.model.mapper.DistributorMapper;
+import com.beatus.factureIT.app.services.model.mapper.RetailerMapper;
 import com.beatus.factureIT.app.services.model.mapper.RetailerProductCategoryMapper;
 import com.beatus.factureIT.app.services.model.mapper.RetailerProductMapper;
-import com.beatus.factureIT.app.services.model.mapper.RetailerMapper;
+import com.beatus.factureIT.app.services.utils.Constants;
 import com.beatus.factureIT.app.services.utils.Utils;
 
 @Repository("retailerRepository")
@@ -37,6 +42,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 	@Autowired
 	@Qualifier(value = "driverManagerDataSource")
 	private DataSource dataSource;
+	
+	@Resource(name = "distributorRepository")
+	private DistributorRepository distributorRepository;
 
 	@Autowired
 	public RetailerRepository(DataSource dataSource) {
@@ -154,22 +162,42 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 	public boolean addProductsForRetailer(List<Product> products, String retailerId) {
 		try {
 			LOGGER.info("In addProductForRetailer");
-			String sql = "INSERT INTO retailer_product (retailer_product_id, retailer_id, product_name, product_desc, product_category_id, brand_name, hsn_code, product_image, product_price, product_unit, product_total_quantity_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO retailer_product (retailer_product_id, retailer_id, product_name, product_desc, product_category_id, brand_name, hsn_code, product_image, product_cost_price, product_margin_amount, product_selling_price, product_unit, product_total_quantity_available, product_gst_tax, product_cgst_tax, product_sgst_tax, product_igst_tax, product_gst_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			List<ProductCategory> categoriesNeedTobeAdded = new ArrayList<ProductCategory>();
 			int[] rowsInserted = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 				@Override
 				public void setValues(PreparedStatement ps, int i) throws SQLException {
 					Product product = products.get(i);
+					String categoryId = null;
 					ps.setString(1, Utils.generateRandomKey(50));
 					ps.setString(2, retailerId);
 					ps.setString(3, product.getProductName());
-					ps.setString(4, product.getProductDesc());					
-					ps.setString(5, product.getProductCategoryId());
+					ps.setString(4, product.getProductDesc());
+					if(StringUtils.isBlank(product.getProductCategoryId())) {
+						if(product.getProductCategory() != null) {
+							categoryId = Utils.generateRandomKey(50);
+							product.getProductCategory().setProductCategoryId(categoryId);
+							categoriesNeedTobeAdded.add(product.getProductCategory());
+						} else {
+							categoryId = Constants.OTHER;
+						}
+					} else {
+						categoryId = product.getProductCategoryId();
+					}
+					ps.setString(5, categoryId);
 					ps.setString(6, product.getBrandName());
 					ps.setString(7, product.getHsnCode());
 					ps.setString(8, product.getProductImageString());
-					ps.setString(9, product.getPrice());
-					ps.setString(10, product.getUnit());
-					ps.setString(11, product.getTotalQuantityAvailable());
+					ps.setString(9, product.getCostPrice());
+					ps.setString(10, product.getMarginAmount());
+					ps.setString(11, product.getSellingPrice());
+					ps.setString(12, product.getUnit());
+					ps.setString(13, product.getTotalQuantityAvailable());
+					ps.setString(14, product.getGstTax());
+					ps.setString(15, product.getCgstTax());
+					ps.setString(16, product.getSgstTax());
+					ps.setString(17, product.getIgstTax());
+					ps.setString(18, product.getGstNumber());
 				}
 
 				@Override
@@ -177,8 +205,14 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 					return products.size();
 				}
 			});
-			if (rowsInserted.length > 0) {
-				LOGGER.info("A new retailer was inserted successfully!");
+			boolean categoriesAdded = false;
+			if(categoriesNeedTobeAdded.size() > 0) {
+				categoriesAdded = addProductCategoriesForRetailer(categoriesNeedTobeAdded, retailerId);
+			}else {
+				categoriesAdded = true;
+			}
+			if (rowsInserted.length > 0 && categoriesAdded) {
+				LOGGER.info("The products of the retailer and categories added successfully!");
 				return true;
 			} else {
 				return false;
@@ -245,7 +279,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 
 	
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public boolean addRetailerRelatedDistributors(List<String> distributorIds, String retailerId) {
+	public boolean addRetailerRelatedDistributors(List<UserTypeIdAndProducts> distributorAndProducts, String retailerId) {
 		try {
 			LOGGER.info("In addRetailerRelatedDistributors");
 			String sql = "INSERT INTO distributor_retailers (distributor_retailer_id, distributor_id, retailer_id) VALUES (?, ?, ?)";
@@ -253,15 +287,37 @@ private static final Logger LOGGER = LoggerFactory.getLogger(RetailerRepository.
 				@Override
 				public void setValues(PreparedStatement ps, int i) throws SQLException {
 					ps.setString(1, Utils.generateRandomKey(50));
-					ps.setString(2, distributorIds.get(i));
+					ps.setString(2, distributorAndProducts.get(i).getUserTypeId());
 					ps.setString(3, retailerId);
 				}
 
 				@Override
 				public int getBatchSize() {
-					return distributorIds.size();
+					return distributorAndProducts.size();
 				}
 			});
+			String distributorId = distributorAndProducts.get(0).getUserTypeId();
+			List<Product> distributorProducts = distributorRepository.getAllProductsOfDistributor(distributorId);
+			List<Product> prodcutsNeedToBeAdded = new ArrayList<Product>();
+			if (distributorProducts != null && distributorProducts.size() > 0) {
+				for (Product product : distributorProducts) {
+					List<String> productIdsNeedToBeAdded = null;
+					if (distributorAndProducts != null && distributorAndProducts.get(0) != null) {
+						productIdsNeedToBeAdded = distributorAndProducts.get(0).getProductIds();
+					}
+					if (product != null && productIdsNeedToBeAdded != null) {
+						for (String productId : productIdsNeedToBeAdded) {
+							if (product.getProductId().equals(productId)) {
+								prodcutsNeedToBeAdded.add(product);
+							}
+						}
+					}
+				}
+			}
+			if (prodcutsNeedToBeAdded.size() > 0) {
+				distributorRepository.addProductsForDistributor(prodcutsNeedToBeAdded,
+						retailerId);
+			}
 			if (rowsInserted.length > 0) {
 				LOGGER.info("A new distributor_retailer_id was inserted successfully!");
 				return true;

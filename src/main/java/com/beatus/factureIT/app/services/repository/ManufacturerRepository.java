@@ -2,10 +2,13 @@ package com.beatus.factureIT.app.services.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +19,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.beatus.factureIT.app.services.model.CollectionAgent;
 import com.beatus.factureIT.app.services.model.Distributor;
+import com.beatus.factureIT.app.services.model.UserTypeIdAndProducts;
 import com.beatus.factureIT.app.services.model.Manufacturer;
 import com.beatus.factureIT.app.services.model.Product;
 import com.beatus.factureIT.app.services.model.ProductCategory;
@@ -26,6 +29,7 @@ import com.beatus.factureIT.app.services.model.mapper.DistributorMapper;
 import com.beatus.factureIT.app.services.model.mapper.ManufacturerMapper;
 import com.beatus.factureIT.app.services.model.mapper.ManufacturerProductCategoryMapper;
 import com.beatus.factureIT.app.services.model.mapper.ManufacturerProductMapper;
+import com.beatus.factureIT.app.services.utils.Constants;
 import com.beatus.factureIT.app.services.utils.Utils;
 
 @Repository("manufacturerRepository")
@@ -44,6 +48,9 @@ public class ManufacturerRepository {
 		jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
+	@Resource(name = "distributorRepository")
+	private DistributorRepository distributorRepository;
+
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public String addManufacturer(User manufacturer) throws ClassNotFoundException, SQLException {
 
@@ -51,10 +58,10 @@ public class ManufacturerRepository {
 			LOGGER.info("In addManufacturer");
 			String id = Utils.generateRandomKey(50);
 			String sql = "INSERT INTO manufacturer (manufacturer_id, manufacturer_company_id, uid, manufacturer_company_name, manufacturer_company_type, manufacturer_first_name, manufacturer_last_name, manufacturer_phone, manufacturer_email, manufacturer_address, manufacturer_city, manufacturer_state, manufacturer_zipcode, latitude, longitude ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			int rowsInserted = jdbcTemplate.update(sql, id, Utils.generateRandomKey(50),
-					manufacturer.getUid(), manufacturer.getCompanyName(), manufacturer.getCompanyType(),
-					manufacturer.getFirstname(), manufacturer.getLastname(), manufacturer.getPhone(),
-					manufacturer.getEmail(), manufacturer.getAddress(), manufacturer.getCity(), manufacturer.getState(),
+			int rowsInserted = jdbcTemplate.update(sql, id, Utils.generateRandomKey(50), manufacturer.getUid(),
+					manufacturer.getCompanyName(), manufacturer.getCompanyType(), manufacturer.getFirstname(),
+					manufacturer.getLastname(), manufacturer.getPhone(), manufacturer.getEmail(),
+					manufacturer.getAddress(), manufacturer.getCity(), manufacturer.getState(),
 					manufacturer.getZipcode(), manufacturer.getLatitude(), manufacturer.getLongitude());
 
 			if (rowsInserted > 0) {
@@ -140,9 +147,10 @@ public class ManufacturerRepository {
 		} finally {
 		}
 	}
-	
+
 	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
-	public List<Manufacturer> getAllManufacturersInASpecificArea(String latitude, String longitude, String radius) throws ClassNotFoundException, SQLException {
+	public List<Manufacturer> getAllManufacturersInASpecificArea(String latitude, String longitude, String radius)
+			throws ClassNotFoundException, SQLException {
 		try {
 			LOGGER.info("In getAllManufacturersInASpecificArea");
 			String sql = "SELECT dist.manufacturer_id AS manufacturerId, dist.manufacturer_company_name AS manufacturerCompanyName, "
@@ -151,7 +159,8 @@ public class ManufacturerRepository {
 					+ " dist.manufacturer_phone AS manufacturerPhone, dist.manufacturer_email AS manufacturerEmail, dist.manufacturer_address AS manufacturerAddress, "
 					+ " dist.manufacturer_city AS manufacturerCity, dist.manufacturer_state AS manufacturerState, dist.manufacturer_zipcode AS manufacturerZipcode, "
 					+ " u.username AS username, u.user_type AS userType, u.verified AS verified "
-					+ " FROM manufacturer dist, users u WHERE dist.uid = u.uid AND earth_box( ll_to_earth(" + latitude + ", " + longitude + "), " +radius +") @> ll_to_earth(dist.latitude, dist.longitude)";
+					+ " FROM manufacturer dist, users u WHERE dist.uid = u.uid AND earth_box( ll_to_earth(" + latitude
+					+ ", " + longitude + "), " + radius + ") @> ll_to_earth(dist.latitude, dist.longitude)";
 			List<Manufacturer> manufacturers = jdbcTemplate.query(sql, new ManufacturerMapper());
 			return manufacturers;
 		} finally {
@@ -161,23 +170,43 @@ public class ManufacturerRepository {
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public boolean addProductsForManufacturer(List<Product> products, String manufacturerId) {
 		try {
-			LOGGER.info("In addProductForManufacture");
-			String sql = "INSERT INTO manufacturer_product (manufacturer_product_id, manufacturer_id, product_name, product_desc, product_category_id, brand_name, hsn_code, product_image, product_price, product_unit, product_total_quantity_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			LOGGER.info("In addProductForManufacturer");
+			String sql = "INSERT INTO manufacturer_product (manufacturer_product_id, manufacturer_id, product_name, product_desc, product_category_id, brand_name, hsn_code, product_image, product_cost_price, product_margin_amount, product_selling_price, product_unit, product_total_quantity_available, product_gst_tax, product_cgst_tax, product_sgst_tax, product_igst_tax, product_gst_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			List<ProductCategory> categoriesNeedTobeAdded = new ArrayList<ProductCategory>();
 			int[] rowsInserted = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 				@Override
 				public void setValues(PreparedStatement ps, int i) throws SQLException {
 					Product product = products.get(i);
+					String categoryId = null;
 					ps.setString(1, Utils.generateRandomKey(50));
 					ps.setString(2, manufacturerId);
 					ps.setString(3, product.getProductName());
-					ps.setString(4, product.getProductDesc());					
-					ps.setString(5, product.getProductCategoryId());
+					ps.setString(4, product.getProductDesc());
+					if(StringUtils.isBlank(product.getProductCategoryId())) {
+						if(product.getProductCategory() != null) {
+							categoryId = Utils.generateRandomKey(50);
+							product.getProductCategory().setProductCategoryId(categoryId);
+							categoriesNeedTobeAdded.add(product.getProductCategory());
+						} else {
+							categoryId = Constants.OTHER;
+						}
+					} else {
+						categoryId = product.getProductCategoryId();
+					}
+					ps.setString(5, categoryId);
 					ps.setString(6, product.getBrandName());
 					ps.setString(7, product.getHsnCode());
 					ps.setString(8, product.getProductImageString());
-					ps.setString(9, product.getPrice());
-					ps.setString(10, product.getUnit());
-					ps.setString(11, product.getTotalQuantityAvailable());
+					ps.setString(9, product.getCostPrice());
+					ps.setString(10, product.getMarginAmount());
+					ps.setString(11, product.getSellingPrice());
+					ps.setString(12, product.getUnit());
+					ps.setString(13, product.getTotalQuantityAvailable());
+					ps.setString(14, product.getGstTax());
+					ps.setString(15, product.getCgstTax());
+					ps.setString(16, product.getSgstTax());
+					ps.setString(17, product.getIgstTax());
+					ps.setString(18, product.getGstNumber());
 				}
 
 				@Override
@@ -185,8 +214,14 @@ public class ManufacturerRepository {
 					return products.size();
 				}
 			});
-			if (rowsInserted.length > 0) {
-				LOGGER.info("A new manufacturer was inserted successfully!");
+			boolean categoriesAdded = false;
+			if(categoriesNeedTobeAdded.size() > 0) {
+				categoriesAdded = addProductCategoriesForManufacturer(categoriesNeedTobeAdded, manufacturerId);
+			}else {
+				categoriesAdded = true;
+			}
+			if (rowsInserted.length > 0 && categoriesAdded) {
+				LOGGER.info("The products of the manufacturer and categories added successfully!");
 				return true;
 			} else {
 				return false;
@@ -194,7 +229,7 @@ public class ManufacturerRepository {
 		} finally {
 		}
 	}
-	
+
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
 	public boolean addProductCategoriesForManufacturer(List<ProductCategory> productCategories, String manufacturerId) {
 		try {
@@ -207,7 +242,7 @@ public class ManufacturerRepository {
 					ps.setString(1, Utils.generateRandomKey(50));
 					ps.setString(2, manufacturerId);
 					ps.setString(3, productCategory.getProductCategoryName());
-					ps.setString(4, productCategory.getProductCategoryDesc());					
+					ps.setString(4, productCategory.getProductCategoryDesc());
 				}
 
 				@Override
@@ -224,50 +259,73 @@ public class ManufacturerRepository {
 		} finally {
 		}
 	}
-	
+
 	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
-	public List<Product> getAllProductsOfManufacturer(String manufacturerId){
+	public List<Product> getAllProductsOfManufacturer(String manufacturerId) {
 		try {
 			LOGGER.info("In getAllProductsOfManufacturer");
-			String sql = "SELECT * "
-					+ " FROM manufacturer_product WHERE manufacturer_id = ?";
-			List<Product> manufacturerProducts = jdbcTemplate.query(sql, new Object[] {manufacturerId},  new ManufacturerProductMapper());
+			String sql = "SELECT * " + " FROM manufacturer_product WHERE manufacturer_id = ?";
+			List<Product> manufacturerProducts = jdbcTemplate.query(sql, new Object[] { manufacturerId },
+					new ManufacturerProductMapper());
 			return manufacturerProducts;
 		} finally {
 		}
 	}
-	
+
 	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
-	public List<ProductCategory> getAllProductCategoriesOfManufacturer(String manufacturerId){
+	public List<ProductCategory> getAllProductCategoriesOfManufacturer(String manufacturerId) {
 		try {
 			LOGGER.info("In getAllProductsOfManufacturer");
 			String sql = "SELECT manProCat.manufacturer_product_category_id AS productCategoryId, manProCat.manufacturer_id AS manufacturerId, "
 					+ " manProCat.product_category_name AS productCategoryName, manProCat.product_category_desc AS productCategoryDesc "
 					+ " FROM manufacturer_product_category manProCat WHERE manProCat.manufacturer_id = ?";
-			List<ProductCategory> manufacturerProductCategories = jdbcTemplate.query(sql, new Object[] {manufacturerId},  new ManufacturerProductCategoryMapper());
+			List<ProductCategory> manufacturerProductCategories = jdbcTemplate.query(sql,
+					new Object[] { manufacturerId }, new ManufacturerProductCategoryMapper());
 			return manufacturerProductCategories;
 		} finally {
 		}
 	}
-	
+
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public boolean addManufacturerRelatedDistributors(List<String> distributorIds, String manufacturerId) {
+	public boolean addManufacturerRelatedDistributors(List<UserTypeIdAndProducts> distributorAndProducts,
+			String manufacturerId) {
 		try {
-			LOGGER.info("In addProductCategoriesForManufacturer");
+			LOGGER.info("In addManufacturerRelatedDistributors");
 			String sql = "INSERT INTO manufacturer_distributors (manufacturer_distributor_id, manufacturer_id, distributor_id) VALUES (?, ?, ?)";
 			int[] rowsInserted = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 				@Override
 				public void setValues(PreparedStatement ps, int i) throws SQLException {
 					ps.setString(1, Utils.generateRandomKey(50));
 					ps.setString(2, manufacturerId);
-					ps.setString(3, distributorIds.get(i));
+					ps.setString(3, distributorAndProducts.get(i).getUserTypeId());
 				}
 
 				@Override
 				public int getBatchSize() {
-					return distributorIds.size();
+					return distributorAndProducts.size();
 				}
 			});
+			List<Product> manufacturerProducts = getAllProductsOfManufacturer(manufacturerId);
+			List<Product> prodcutsNeedToBeAdded = new ArrayList<Product>();
+			if (manufacturerProducts != null && manufacturerProducts.size() > 0) {
+				for (Product product : manufacturerProducts) {
+					List<String> productIdsNeedToBeAdded = null;
+					if (distributorAndProducts != null && distributorAndProducts.get(0) != null) {
+						productIdsNeedToBeAdded = distributorAndProducts.get(0).getProductIds();
+					}
+					if (product != null && productIdsNeedToBeAdded != null) {
+						for (String productId : productIdsNeedToBeAdded) {
+							if (product.getProductId().equals(productId)) {
+								prodcutsNeedToBeAdded.add(product);
+							}
+						}
+					}
+				}
+			}
+			if (prodcutsNeedToBeAdded.size() > 0) {
+				distributorRepository.addProductsForDistributor(prodcutsNeedToBeAdded,
+						distributorAndProducts.get(0).getUserTypeId());
+			}
 			if (rowsInserted.length > 0) {
 				LOGGER.info("A new manufacturer was inserted successfully!");
 				return true;
@@ -277,9 +335,10 @@ public class ManufacturerRepository {
 		} finally {
 		}
 	}
-	
+
 	@Transactional(propagation = Propagation.SUPPORTS, rollbackFor = Throwable.class)
-	public List<Distributor> getManufacturerRelatedDistributors(String manufacturerId) throws ClassNotFoundException, SQLException {
+	public List<Distributor> getManufacturerRelatedDistributors(String manufacturerId)
+			throws ClassNotFoundException, SQLException {
 		try {
 			LOGGER.info("In getManufacturerRelatedDistributors");
 			String sql = "SELECT dist.distributor_id AS distributorId, dist.distributor_company_name AS distributorCompanyName, "
@@ -288,12 +347,13 @@ public class ManufacturerRepository {
 					+ " dist.distributor_phone AS distributorPhone, dist.distributor_email AS distributorEmail, dist.distributor_address AS distributorAddress, "
 					+ " dist.distributor_city AS distributorCity, dist.distributor_state AS distributorState, dist.distributor_zipcode AS distributorZipcode "
 					+ " FROM distributor dist, manufacturer_distributors md WHERE md.manufacturer_id = ? AND md.distributor_id = dist.distributor_id";
-			List<Distributor> distributors = jdbcTemplate.query(sql, new Object[] {manufacturerId}, new DistributorMapper());
+			List<Distributor> distributors = jdbcTemplate.query(sql, new Object[] { manufacturerId },
+					new DistributorMapper());
 			return distributors;
 		} finally {
 		}
 	}
-	
+
 	public void deleteManufacturer(int manufacturerId, String companyId) throws SQLException {
 		/*
 		 * String sql = "DELETE FROM manufacturer where manufacturer_id = ?";

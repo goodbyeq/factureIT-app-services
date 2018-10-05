@@ -22,9 +22,16 @@ public class DistributorProductMapper implements RowMapper<Product> {
 		product.setProductImageString(rs.getString("product_image"));
 		product.setBrandName(rs.getString("brand_name"));
 		product.setHsnCode(rs.getString("hsn_code"));
-		product.setPrice(rs.getString("product_price"));
+		product.setCostPrice(rs.getString("product_cost_price"));
+		product.setMarginAmount(rs.getString("product_margin_amount"));
+		product.setSellingPrice(rs.getString("product_selling_price"));
 		product.setUnit(rs.getString("product_unit"));
 		product.setTotalQuantityAvailable(rs.getString("product_total_quantity_available"));
+		product.setGstTax(rs.getString("product_gst_tax"));
+		product.setCgstTax(rs.getString("product_cgst_tax"));
+		product.setSgstTax(rs.getString("product_sgst_tax"));
+		product.setIgstTax(rs.getString("product_igst_tax"));
+		product.setGstNumber(rs.getString("product_gst_number"));
 		return product;
 	}
 }

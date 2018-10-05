@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,7 @@ import com.beatus.factureIT.app.services.model.Manufacturer;
 import com.beatus.factureIT.app.services.model.ManufacturerResponse;
 import com.beatus.factureIT.app.services.model.Product;
 import com.beatus.factureIT.app.services.model.ProductCategory;
+import com.beatus.factureIT.app.services.model.UserTypeIdAndProducts;
 import com.beatus.factureIT.app.services.service.ManufacturerService;
 import com.beatus.factureIT.app.services.utils.Constants;
 
@@ -119,7 +121,7 @@ public class ManufacturerController {
 	
 	@RequestMapping(value = Constants.WEB_MANUFACTURER_ADD_MANUFACTURER, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addManufacturerPost(HttpServletRequest request,
-			ModelMap model, @RequestParam Manufacturer manufacturer) throws ClassNotFoundException, SQLException {
+			ModelMap model, @RequestBody Manufacturer manufacturer) throws ClassNotFoundException, SQLException {
 		String id = manufacturerService.addManufacturer(manufacturer);
 		LOGGER.info("After the add call and the manufacturer " + manufacturer != null
 				? manufacturer.getFirstname() : "No Manufacturer data" + " got added successfully");
@@ -137,7 +139,7 @@ public class ManufacturerController {
 	
 	@RequestMapping(value = Constants.WEB_MANUFACTURER_ADD_PRODUCTS, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addProductsForManufacturerPost(HttpServletRequest request,
-			ModelMap model, @RequestParam List<Product> products, @RequestParam String manufacturerId) throws ClassNotFoundException, SQLException {
+			ModelMap model, @RequestBody List<Product> products, @RequestParam String manufacturerId) throws ClassNotFoundException, SQLException {
 		boolean isProductsAdded = manufacturerService.addProductsForManufacturer(products, manufacturerId);
 		LOGGER.info("After the add products call for the manufacturer with Id: " + manufacturerId != null
 				? manufacturerId : "No Manufacturer data");
@@ -146,7 +148,7 @@ public class ManufacturerController {
 	
 	@RequestMapping(value = Constants.WEB_MANUFACTURER_ADD_CATEGORIES, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addProductCategoriesForManufacturerPost(HttpServletRequest request,
-			ModelMap model, @RequestParam List<ProductCategory> productCategories, @RequestParam String manufacturerId) throws ClassNotFoundException, SQLException {
+			ModelMap model, @RequestBody List<ProductCategory> productCategories, @RequestParam String manufacturerId) throws ClassNotFoundException, SQLException {
 		boolean isProductsAdded = manufacturerService.addProductCategoriesForManufacturer(productCategories, manufacturerId);
 		LOGGER.info("After the add product categories call for the manufacturer with Id: " + manufacturerId != null
 				? manufacturerId : "No Manufacturer data");
@@ -173,8 +175,8 @@ public class ManufacturerController {
 	
 	@RequestMapping(value = Constants.WEB_MANUFACTURER_ADD_RELATED_DISTRIBUTORS, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addManufacturerRelatedDistributorsPost(HttpServletRequest request,
-			ModelMap model, @RequestParam List<String> distributorIds, @RequestParam String manufacturerId) throws ClassNotFoundException, SQLException {
-		boolean isDistributorAdded = manufacturerService.addManufacturerRelatedDistributors(distributorIds, manufacturerId);
+			ModelMap model, @RequestBody List<UserTypeIdAndProducts> distributorAndProducts, @RequestParam String manufacturerId) throws ClassNotFoundException, SQLException {
+		boolean isDistributorAdded = manufacturerService.addManufacturerRelatedDistributors(distributorAndProducts, manufacturerId);
 		LOGGER.info("After the add related distributors call for the manufacturer with Id: " + manufacturerId != null
 				? manufacturerId : "No Manufacturer data");
 		return jsend(isDistributorAdded);

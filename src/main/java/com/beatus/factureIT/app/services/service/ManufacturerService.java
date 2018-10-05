@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.beatus.factureIT.app.services.model.CollectionAgent;
 import com.beatus.factureIT.app.services.model.Distributor;
+import com.beatus.factureIT.app.services.model.UserTypeIdAndProducts;
 import com.beatus.factureIT.app.services.model.Manufacturer;
 import com.beatus.factureIT.app.services.model.Product;
 import com.beatus.factureIT.app.services.model.ProductCategory;
@@ -81,9 +81,9 @@ public class ManufacturerService {
 		return manufacturerProductCategories;
 	}
 	
-	public boolean addManufacturerRelatedDistributors(List<String> distributorIds, String manufacturerId) throws ClassNotFoundException, SQLException {
+	public boolean addManufacturerRelatedDistributors(List<UserTypeIdAndProducts> distributorAndProducts, String manufacturerId) throws ClassNotFoundException, SQLException {
 		LOGGER.info("In addManufacturerRelatedDistributors");
-		boolean isDistributorAdded = manufacturerRepository.addManufacturerRelatedDistributors(distributorIds, manufacturerId);
+		boolean isDistributorAdded = manufacturerRepository.addManufacturerRelatedDistributors(distributorAndProducts, manufacturerId);
 		return isDistributorAdded;
 	}
 	

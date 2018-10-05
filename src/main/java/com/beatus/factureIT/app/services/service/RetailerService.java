@@ -15,6 +15,7 @@ import com.beatus.factureIT.app.services.model.Product;
 import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.User;
+import com.beatus.factureIT.app.services.model.UserTypeIdAndProducts;
 import com.beatus.factureIT.app.services.repository.RetailerRepository;
 
 @Service
@@ -44,9 +45,9 @@ public class RetailerService {
 		return retailers;
 	}
 	
-	public boolean addRetailerRelatedDistributors(List<String> distributorIds, String retailerId) throws ClassNotFoundException, SQLException {
+	public boolean addRetailerRelatedDistributors(List<UserTypeIdAndProducts> distributorAndProducts, String retailerId) throws ClassNotFoundException, SQLException {
 		LOGGER.info("In addRetailerRelatedRetailers service");
-		boolean isAdded = retailerRepository.addRetailerRelatedDistributors(distributorIds, retailerId);
+		boolean isAdded = retailerRepository.addRetailerRelatedDistributors(distributorAndProducts, retailerId);
 		return isAdded;
 	}
 	

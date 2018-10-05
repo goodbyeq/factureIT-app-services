@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,7 @@ import com.beatus.factureIT.app.services.model.Product;
 import com.beatus.factureIT.app.services.model.ProductCategory;
 import com.beatus.factureIT.app.services.model.Retailer;
 import com.beatus.factureIT.app.services.model.RetailerResponse;
+import com.beatus.factureIT.app.services.model.UserTypeIdAndProducts;
 import com.beatus.factureIT.app.services.service.RetailerService;
 import com.beatus.factureIT.app.services.utils.Constants;
 
@@ -118,7 +120,7 @@ public class RetailerController {
 	
 	@RequestMapping(value = Constants.WEB_RETAILER_ADD_RETAILER, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addRetailerPost(HttpServletRequest request,
-			ModelMap model, @RequestParam Retailer retailer) throws ClassNotFoundException, SQLException {
+			ModelMap model, @RequestBody Retailer retailer) throws ClassNotFoundException, SQLException {
 		String id = retailerService.addRetailer(retailer);
 		LOGGER.info("After the add call and the retailer " + retailer != null
 				? retailer.getFirstname() : "No Retailer data" + " got added successfully");
@@ -127,7 +129,7 @@ public class RetailerController {
 	
 	@RequestMapping(value = Constants.WEB_RETAILER_EDIT_RETAILER, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> editRetailerPost(HttpServletRequest request,
-			ModelMap model, @RequestParam Retailer retailer) throws ClassNotFoundException, SQLException {
+			ModelMap model, @RequestBody Retailer retailer) throws ClassNotFoundException, SQLException {
 		boolean isRetailerEdited = retailerService.editRetailer(retailer);
 		LOGGER.info("After the edit call and the retailer " + retailer != null
 				? retailer.getFirstname() : "No Retailer data" + " got edited successfully");
@@ -136,7 +138,7 @@ public class RetailerController {
 	
 	@RequestMapping(value = Constants.WEB_RETAILER_ADD_PRODUCTS, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addProductsForRetailerPost(HttpServletRequest request,
-			ModelMap model, @RequestParam List<Product> products, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+			ModelMap model, @RequestBody List<Product> products, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
 		boolean isProductsAdded = retailerService.addProductsForRetailer(products, retailerId);
 		LOGGER.info("After the add products call for the retailer with Id: " + retailerId != null
 				? retailerId : "No Retailer data");
@@ -145,7 +147,7 @@ public class RetailerController {
 	
 	@RequestMapping(value = Constants.WEB_RETAILER_ADD_CATEGORIES, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addProductCategoriesForRetailerPost(HttpServletRequest request,
-			ModelMap model, @RequestParam List<ProductCategory> productCategories, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+			ModelMap model, @RequestBody List<ProductCategory> productCategories, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
 		boolean isProductsAdded = retailerService.addProductCategoriesForRetailer(productCategories, retailerId);
 		LOGGER.info("After the add product categories call for the retailer with Id: " + retailerId != null
 				? retailerId : "No Retailer data");
@@ -173,9 +175,9 @@ public class RetailerController {
 	
 	@RequestMapping(value = Constants.WEB_RETAILER_ADD_RELATED_DISTRIBUTORS, method = RequestMethod.POST)
 	public @ResponseBody JSendResponse<String> addRetailerRelatedDistributorsPost(HttpServletRequest request,
-			ModelMap model, @RequestParam List<String> distributorIds, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
-		boolean isDistributorAdded = retailerService.addRetailerRelatedDistributors(distributorIds, retailerId);
-		LOGGER.info("After the add products call for the retailer with Id: " + retailerId != null
+			ModelMap model, @RequestBody List<UserTypeIdAndProducts> distributorAndProducts, @RequestParam String retailerId) throws ClassNotFoundException, SQLException {
+		boolean isDistributorAdded = retailerService.addRetailerRelatedDistributors(distributorAndProducts, retailerId);
+		LOGGER.info("After the add retailer related distributors with Id: " + retailerId != null
 				? retailerId : "No Retailer data");
 		return jsend(isDistributorAdded);
 	}

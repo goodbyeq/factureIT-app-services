@@ -9,11 +9,19 @@ public class Product implements Comparable<Product>{
 	private String productCategoryId;
 	private String brandName;
 	private String hsnCode;
-	private String price;
+	private String costPrice;
+	private String marginAmount;
+	private String sellingPrice;
 	private String unit;
 	private String totalQuantityAvailable;
+	private String gstTax;
+	private String cgstTax;
+	private String sgstTax;
+	private String igstTax;
 	private String userType;
 	private String userTypeID;
+	private ProductCategory productCategory;
+	private String gstNumber;
 	
 	public String getProductId() {
 		return productId;
@@ -84,12 +92,28 @@ public class Product implements Comparable<Product>{
 		this.hsnCode = hsnCode;
 	}
 
-	public String getPrice() {
-		return price;
+	public String getCostPrice() {
+		return costPrice;
 	}
 
-	public void setPrice(String price) {
-		this.price = price;
+	public void setCostPrice(String costPrice) {
+		this.costPrice = costPrice;
+	}
+
+	public String getMarginAmount() {
+		return marginAmount;
+	}
+
+	public void setMarginAmount(String marginAmount) {
+		this.marginAmount = marginAmount;
+	}
+
+	public String getSellingPrice() {
+		return sellingPrice;
+	}
+
+	public void setSellingPrice(String sellingPrice) {
+		this.sellingPrice = sellingPrice;
 	}
 
 	public String getUnit() {
@@ -123,4 +147,53 @@ public class Product implements Comparable<Product>{
 	public void setUserTypeID(String userTypeID) {
 		this.userTypeID = userTypeID;
 	}
+
+	public ProductCategory getProductCategory() {
+		return productCategory;
+	}
+
+	public void setProductCategory(ProductCategory productCategory) {
+		this.productCategory = productCategory;
+	}
+
+	public String getGstTax() {
+		return gstTax;
+	}
+
+	public void setGstTax(String gstTax) {
+		this.gstTax = gstTax;
+	}
+
+	public String getCgstTax() {
+		return cgstTax;
+	}
+
+	public void setCgstTax(String cgstTax) {
+		this.cgstTax = cgstTax;
+	}
+
+	public String getSgstTax() {
+		return sgstTax;
+	}
+
+	public void setSgstTax(String sgstTax) {
+		this.sgstTax = sgstTax;
+	}
+
+	public String getIgstTax() {
+		return igstTax;
+	}
+
+	public void setIgstTax(String igstTax) {
+		this.igstTax = igstTax;
+	}
+
+	public String getGstNumber() {
+		return gstNumber;
+	}
+
+	public void setGstNumber(String gstNumber) {
+		this.gstNumber = gstNumber;
+	}
+
 }
